@@ -1,8 +1,10 @@
 import styled from "styled-components";
 
+// #4c6a35;
+
 export const NavigationWrapper = styled.nav`
   align-items: center;
-  background-color: #4c6a35;
+  background-color: #6A0D2B;
   bottom: 0;
   display: flex;
   height: 64px;
@@ -14,17 +16,13 @@ export const NavigationWrapper = styled.nav`
 
 export const NavList = styled.ul`
   display: flex;
-  justify-content: space-around;
   list-style: none;
   margin: 0;
   padding: 0;
-  width: 50%;
 `;
 
 export const NavItem = styled.li`
   color: white;
-  font-size: 1.5rem;
-  font-weight: bold;
   cursor: pointer;
   text-decoration: none;
   padding: 16px;

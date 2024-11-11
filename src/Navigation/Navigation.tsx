@@ -1,4 +1,3 @@
-import React from "react";
 import { NavigationWrapper, NavItem, NavList } from "./styles";
 
 const Navigation = () => {
