@@ -1,6 +1,8 @@
 import GreenSauceFlowers from '../src/assets/green-sauce-flowers.jpg';
-
-interface Recipe {
+import LASalad from '../src/assets/la-salad.jpg';
+import BPAsparagusTofu from '../src/assets/blackpepper-asparagus-tofu.jpg';
+import TofuScramble from '../src/assets/tofi-scrambie.jpg';
+export interface Recipe {
   id: number;
   name: string;
   tagline: string;
@@ -160,6 +162,24 @@ export const recipes: Recipe[] = [
     image: GreenSauceFlowers,
     name: "Green Sauce Pasta",
     tagline: "This ain't no pesto, this just green sauce made from the kale or spinach you keep forgetting to eat",
+  },
+  {
+    id: 3,
+    image: LASalad,
+    name: "That One LA Salad",
+    tagline: "This salad is sponsored by Moby and the city of Los Angeles",
+  },
+  {
+    id: 4,
+    image: BPAsparagusTofu,
+    name: "Black Pepper Asparagus Tofu",
+    tagline: "Just go light on the black pepper and you'll be fine",
+  },
+  {
+    id: 5,
+    image: TofuScramble,
+    name: "Tofie Scrambie",
+    tagline: "Throw whatever you want in there girlie"
   }
 ];
 

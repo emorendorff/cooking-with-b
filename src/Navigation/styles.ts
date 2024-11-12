@@ -3,15 +3,14 @@ import styled from "styled-components";
 // #4c6a35;
 
 export const NavigationWrapper = styled.nav`
-  align-items: center;
-  background-color: #6A0D2B;
-  bottom: 0;
-  display: flex;
-  height: 64px;
-  left: 0;
   position: fixed;
-  justify-content: space-around;
-  width: 100%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #F4F1E1;
+  z-index: 1000;
+  background-color: #6A0D2B;
+  height: 64px;
 `;
 
 export const NavList = styled.ul`

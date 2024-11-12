@@ -1,9 +1,16 @@
 import styled from "styled-components";
 
 const HeaderWrap = styled.header`
-  height: 64px;
+  background-color: #f4f1e1;
   display: flex;
   flex-direction: column;
+  height: 64px;
+  left: 0;
+  padding: 0 16px;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 1000;
 `;
 
 const BSpan = styled.span`
