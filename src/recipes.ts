@@ -22,8 +22,8 @@ export interface Recipe {
   difficulty?: string;
   ingredients?: {
     item: string;
-    amount: number;
-    unit: string;
+    amount?: number;
+    unit?: string;
     notes?: string;
   }[];
   instructions?: {

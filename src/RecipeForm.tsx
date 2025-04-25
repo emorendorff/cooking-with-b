@@ -41,10 +41,10 @@ const Input = styled.input`
 const TextArea = styled.textarea`
   padding: 8px 12px;
   border: 1px solid #c6b7a8;
-  border-radius: 4px;
+  border-radius: 8px;
   font-family: var(--font-secondary);
   font-size: 14px;
-  min-height: 100px;
+  min-height: 50px;
 `;
 
 const Button = styled.button`
@@ -102,21 +102,22 @@ interface RecipeFormProps {
   onSubmit: (recipe: Partial<Recipe>) => void;
 }
 
-const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
-  const [recipe, setRecipe] = useState<Partial<Recipe>>({
-    name: "",
-    tagline: "",
-    servings: 4,
-    prepTime: { value: 0, unit: "minutes" },
-    cookTime: { value: 0, unit: "minutes" },
-    totalTime: { value: 0, unit: "minutes" },
-    difficulty: "easy",
-    ingredients: [{ item: "", amount: 0, unit: "", notes: "" }],
-    instructions: [{ step: 1, text: "" }],
-    tags: [""],
-    equipment: [""]
-  });
+const initialValues: Partial<Recipe> = {
+  name: "",
+  tagline: "",
+  servings: 4,
+  prepTime: { value: 0, unit: "minutes" },
+  cookTime: { value: 0, unit: "minutes" },
+  totalTime: { value: 0, unit: "minutes" },
+  difficulty: "easy",
+  ingredients: [{ item: "", amount: 0, unit: "", notes: "" }],
+  instructions: [{ step: 1, text: "" }],
+  tags: [""],
+  equipment: [""]
+};
 
+const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
+  const [recipe, setRecipe] = useState<Partial<Recipe>>(initialValues);
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -273,11 +274,12 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
       id: Date.now()
     };
     onSubmit(recipeWithId);
+    // Reset the form after submission
+    setRecipe(initialValues);
   };
 
   return (
     <FormContainer>
-      <h2>Add New Recipe</h2>
       <Form onSubmit={handleSubmit}>
         <FormGroup>
           <Label htmlFor="name">Recipe Name</Label>
@@ -401,8 +403,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
                   }
                   style={{ flex: 1 }}
                   min="0"
-                  step="0.1"
-                  required
+                  step="0.25"
                 />
                 <Input
                   type="text"
@@ -412,9 +413,8 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
                     handleIngredientChange(index, "unit", e.target.value)
                   }
                   style={{ flex: 1 }}
-                  required
                 />
-                <Input
+                {/* <Input
                   type="text"
                   placeholder="Notes (optional)"
                   value={ingredient.notes || ""}
@@ -422,7 +422,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
                     handleIngredientChange(index, "notes", e.target.value)
                   }
                   style={{ flex: 2 }}
-                />
+                /> */}
                 <RemoveButton
                   type="button"
                   onClick={() => removeIngredient(index)}
@@ -481,7 +481,6 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
                   value={tag}
                   onChange={(e) => handleTagChange(index, e.target.value)}
                   style={{ flex: 1 }}
-                  required
                 />
                 <RemoveButton
                   type="button"
@@ -509,7 +508,6 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
                   value={item}
                   onChange={(e) => handleEquipmentChange(index, e.target.value)}
                   style={{ flex: 1 }}
-                  required
                 />
                 <RemoveButton
                   type="button"

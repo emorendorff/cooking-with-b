@@ -1,15 +1,15 @@
 {
   "recipes": [
     {
-      "name": "dfasdf",
-      "tagline": "dsfa",
+      "name": "Caesar Dressing",
+      "tagline": "The Best Caesar Dressing There Ever Was",
       "servings": 4,
       "prepTime": {
-        "value": 1,
+        "value": 0,
         "unit": "minutes"
       },
       "cookTime": {
-        "value": 0,
+        "value": 10,
         "unit": "minutes"
       },
       "totalTime": {
@@ -19,25 +19,487 @@
       "difficulty": "easy",
       "ingredients": [
         {
-          "item": "a",
+          "item": "Whole (unroasted) Cashews",
           "amount": 1,
-          "unit": "f",
+          "unit": "Cup",
+          "notes": ""
+        },
+        {
+          "item": "Nutritional Yeast",
+          "amount": 0.25,
+          "unit": "Cup",
+          "notes": ""
+        },
+        {
+          "item": "Lemon Juice",
+          "amount": 0.25,
+          "unit": "Cup",
+          "notes": ""
+        },
+        {
+          "item": "Garlic Cloves",
+          "amount": 3,
+          "unit": "",
+          "notes": ""
+        },
+        {
+          "item": "Brine from a jar of capers ",
+          "amount": 2,
+          "unit": "Tsp",
+          "notes": ""
+        },
+        {
+          "item": "Dijon Mustard",
+          "amount": 1,
+          "unit": "Tsp",
+          "notes": ""
+        },
+        {
+          "item": "White Miso Paste",
+          "amount": 1,
+          "unit": "Tsp",
+          "notes": ""
+        },
+        {
+          "item": "Kosher Salt",
+          "amount": 0.75,
+          "unit": "Tsp",
+          "notes": ""
+        },
+        {
+          "item": "Black Pepper",
+          "amount": 0.5,
+          "unit": "Tsp",
+          "notes": ""
+        },
+        {
+          "item": "Red Wine Vinegar (optional)",
+          "amount": 1,
+          "unit": "Tsp",
+          "notes": ""
+        },
+        {
+          "item": "Water",
+          "amount": 0.75,
+          "unit": "Cup",
           "notes": ""
         }
       ],
       "instructions": [
         {
           "step": 1,
-          "text": "d"
+          "text": "Add all ingredients to a blender and let her rip until smooth, like 2-3 minutes. That's it!"
         }
       ],
       "tags": [
-        "dd"
+        "Dressing",
+        "Salad"
       ],
       "equipment": [
-        "dd"
+        "Blender"
       ],
-      "id": 1741702159496
+      "id": 1741743103525
+    },
+    {
+      "name": "Coconut-Ginger Black Beans + Soyrizo",
+      "tagline": "Gains but with island vibes",
+      "servings": 4,
+      "prepTime": {
+        "value": 0,
+        "unit": "minutes"
+      },
+      "cookTime": {
+        "value": 30,
+        "unit": "minutes"
+      },
+      "totalTime": {
+        "value": 0,
+        "unit": "minutes"
+      },
+      "difficulty": "easy",
+      "ingredients": [
+        {
+          "item": "black beans",
+          "amount": 2,
+          "unit": "cans",
+          "notes": ""
+        },
+        {
+          "item": "olive oil",
+          "amount": 2,
+          "unit": "tablespoons",
+          "notes": ""
+        },
+        {
+          "item": "cumin",
+          "amount": 1.5,
+          "unit": "teaspoons",
+          "notes": ""
+        },
+        {
+          "item": "fresh ginger",
+          "amount": 3,
+          "unit": "inch piece (grated)",
+          "notes": ""
+        },
+        {
+          "item": "full-fat coconut milk",
+          "amount": 1,
+          "unit": "can",
+          "notes": ""
+        },
+        {
+          "item": "lime zest",
+          "amount": 1,
+          "unit": "teaspon",
+          "notes": ""
+        },
+        {
+          "item": "lime",
+          "amount": 2,
+          "unit": "tablespoons (from 1 lime)",
+          "notes": ""
+        },
+        {
+          "item": "plantain chips",
+          "amount": 1.5,
+          "unit": "cups (optional)",
+          "notes": ""
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Rinse 1 of the can of black beans and set aside for now. In a large saucepan, heat the oil over medium. "
+        },
+        {
+          "step": 2,
+          "text": "Add the cumin and about half of the grated ginger and stir constantly til it starts to smell yummy (usually about a minute). Then add the rinsed beans and the other can straight from the can with all the juices, add the coconut milk and then season  heavy with salt and pepper. "
+        },
+        {
+          "step": 3,
+          "text": "Bring it to a boil over medium high then bring it down to a simmer and cook for about 15/20 minutes, stirring every now and then. If you want a thicker situation you can mash some of the beans with the back of a spoon while it's cooking, but choose your own adventure! "
+        },
+        {
+          "step": 4,
+          "text": "If you got the plantain chips then in a little bowl crumble them into bitesize pieces and add the lime zest "
+        },
+        {
+          "step": 5,
+          "text": "take the beans off the heat, stir in the rest of the ginger and salt and pep to taste. Add the lime a little bit at a time til they are nice and bright but you still get the coconut flavor"
+        }
+      ],
+      "tags": [
+        "beans"
+      ],
+      "equipment": [
+        "pot",
+        "strainer ",
+        "microplane"
+      ],
+      "id": 1745550041281
+    },
+    {
+      "name": "THE Air Fryer Crispy Tofu",
+      "tagline": "The base recipe for all crunchy saucy tofu recipes ",
+      "servings": "2",
+      "prepTime": {
+        "value": null,
+        "unit": "minutes"
+      },
+      "cookTime": {
+        "value": 15,
+        "unit": "minutes"
+      },
+      "totalTime": {
+        "value": 0,
+        "unit": "minutes"
+      },
+      "difficulty": "easy",
+      "ingredients": [
+        {
+          "item": "extra firm tofu (drained and pressed)",
+          "amount": 1,
+          "unit": "block",
+          "notes": ""
+        },
+        {
+          "item": "cornstarch",
+          "amount": 1,
+          "unit": "tablespoon",
+          "notes": ""
+        },
+        {
+          "item": "oil",
+          "amount": 1,
+          "unit": "tablespoon",
+          "notes": ""
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Cut or tear your pressed tofu into whatever size you want and place in a bowl and add oil, cornstarch, salt and pep and toss til it's coated real good "
+        },
+        {
+          "step": 2,
+          "text": "Air fry at 385 for 12-14 minutes, giving them a good shake halfway through"
+        }
+      ],
+      "tags": [
+        "tofu",
+        "base recipe",
+        "essentials"
+      ],
+      "equipment": [
+        "air fryer"
+      ],
+      "id": 1745587632210
+    },
+    {
+      "name": "Teriyaki Tempeh ",
+      "tagline": "A bowl staple! Serve with rice, some veggies of your choosing, sweet potatoes, avo, pickled radishes, etc",
+      "servings": 4,
+      "prepTime": {
+        "value": 24,
+        "unit": "hours"
+      },
+      "cookTime": {
+        "value": 30,
+        "unit": "minutes"
+      },
+      "totalTime": {
+        "value": 0,
+        "unit": "minutes"
+      },
+      "difficulty": "easy",
+      "ingredients": [
+        {
+          "item": "tempeh ",
+          "amount": 2,
+          "unit": "packs ",
+          "notes": ""
+        },
+        {
+          "item": "TJ's soyaki marinade ",
+          "amount": 1,
+          "unit": "bottle",
+          "notes": ""
+        },
+        {
+          "item": "cornstarch ",
+          "amount": 1,
+          "unit": "teaspoon",
+          "notes": ""
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Cut tempeh into 1in strips and put in a bowl/tupperware that can be covered. Pour the marinade to generously cover and give a little shake to get everything in the marinade. Let marinate overnight or up to 5 days. "
+        },
+        {
+          "step": 2,
+          "text": "When you're ready to bake line a baking sheet with parchment paper and pre heat oven to 420 (blaze it)-425. Add the strips to the sheet in nice little rows and bake for 30 min, taking them out and flipping them halfway through. "
+        },
+        {
+          "step": 3,
+          "text": "While it's baking you can get your other bowl ingredients going :) "
+        },
+        {
+          "step": 4,
+          "text": "To make a sauce from the marinade you used, mix the cornstarch into a slurry in a bitty bowl with some water and add to a saucepan with the marinade on medium so it simmers and starts to thicken, usually about 5 minutes. "
+        },
+        {
+          "step": 5,
+          "text": "When the tempeh is done you can either totally coat them by tossing them in the saucepan or just serve on the side and drizzle over the tempeh and the rest of the bowls to enjoy"
+        }
+      ],
+      "tags": [
+        "tempeh ",
+        "asian"
+      ],
+      "equipment": [
+        "oven"
+      ],
+      "id": 1745591985410
+    },
+    {
+      "name": "Teriyaki Tempeh ",
+      "tagline": "A bowl staple! Serve with rice, some veggies of your choosing, sweet potatoes, avo, pickled radishes, etc",
+      "servings": 4,
+      "prepTime": {
+        "value": 24,
+        "unit": "hours"
+      },
+      "cookTime": {
+        "value": 30,
+        "unit": "minutes"
+      },
+      "totalTime": {
+        "value": 0,
+        "unit": "minutes"
+      },
+      "difficulty": "easy",
+      "ingredients": [
+        {
+          "item": "tempeh ",
+          "amount": 2,
+          "unit": "packs ",
+          "notes": ""
+        },
+        {
+          "item": "TJ's soyaki marinade ",
+          "amount": 1,
+          "unit": "bottle",
+          "notes": ""
+        },
+        {
+          "item": "cornstarch ",
+          "amount": 1,
+          "unit": "teaspoon",
+          "notes": ""
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Cut tempeh into 1in strips and put in a bowl/tupperware that can be covered. Pour the marinade to generously cover and give a little shake to get everything in the marinade. Let marinate overnight or up to 5 days. "
+        },
+        {
+          "step": 2,
+          "text": "When you're ready to bake line a baking sheet with parchment paper and pre heat oven to 420 (blaze it)-425. Add the strips to the sheet in nice little rows and bake for 30 min, taking them out and flipping them halfway through. "
+        },
+        {
+          "step": 3,
+          "text": "While it's baking you can get your other bowl ingredients going :) "
+        },
+        {
+          "step": 4,
+          "text": "To make a sauce from the marinade you used, mix the cornstarch into a slurry in a bitty bowl with some water and add to a saucepan with the marinade on medium so it simmers and starts to thicken, usually about 5 minutes. "
+        },
+        {
+          "step": 5,
+          "text": "When the tempeh is done you can either totally coat them by tossing them in the saucepan or just serve on the side and drizzle over the tempeh and the rest of the bowls to enjoy"
+        }
+      ],
+      "tags": [
+        "tempeh ",
+        "asian"
+      ],
+      "equipment": [
+        "oven"
+      ],
+      "id": 1745591987185
+    },
+    {
+      "name": "Green Gains Pasta",
+      "tagline": "This is my go too flexible sauce for when i have greens that are looking sus but not sus enough to throw away. While the greens and seasoning and tofu is non negotiable, everything else is a nice little addition but not required",
+      "servings": 4,
+      "prepTime": {
+        "value": 20,
+        "unit": "minutes"
+      },
+      "cookTime": {
+        "value": 10,
+        "unit": "minutes"
+      },
+      "totalTime": {
+        "value": 0,
+        "unit": "minutes"
+      },
+      "difficulty": "easy",
+      "ingredients": [
+        {
+          "item": "kale or spinach ",
+          "amount": 1,
+          "unit": "bunch or 2 cups spinach, roughly chopped ",
+          "notes": ""
+        },
+        {
+          "item": "silken or soft tofu",
+          "amount": 0.5,
+          "unit": "block",
+          "notes": ""
+        },
+        {
+          "item": "shallot (optional), finely chopped",
+          "amount": 1,
+          "unit": "-",
+          "notes": ""
+        },
+        {
+          "item": "garlic cloves, finely chopped (optional)",
+          "amount": 4,
+          "unit": "-",
+          "notes": ""
+        },
+        {
+          "item": "nutritional yeast ",
+          "amount": 2,
+          "unit": "tablespoons",
+          "notes": ""
+        },
+        {
+          "item": "medium sized lemon, juiced",
+          "amount": 1,
+          "unit": "",
+          "notes": ""
+        },
+        {
+          "item": "vegan lactic acid (optional)",
+          "amount": 1,
+          "unit": "small little pinch",
+          "notes": ""
+        },
+        {
+          "item": "vegan butter ",
+          "amount": 1,
+          "unit": "tablespoon",
+          "notes": ""
+        },
+        {
+          "item": "protein pasta ",
+          "amount": 1,
+          "unit": "box",
+          "notes": ""
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "If using kale remove the stems and tear into pieces. Get a pot boiling of salted water that will be for cooking your greens. "
+        },
+        {
+          "step": 2,
+          "text": "If using shallot and garlic then heat up a small skillet with some oil and sautee over medium just until they get some color and then add them to the blender"
+        },
+        {
+          "step": 3,
+          "text": "Once the water is boiling add the kale/spinach to the pot and let them cook for a sec, 2 minutes for kale and just 1 for spinach. Using a slotted spoon or strainer, remove the greens and add to a bowl or colander and douse with cold water. Squeeze the liquid out and add to blender."
+        },
+        {
+          "step": 4,
+          "text": "Add your pasta to the now green water and cook as directed. Reserve about a 1/4 cup of pasta water before draining."
+        },
+        {
+          "step": 5,
+          "text": "Add the tofu, a big ole pinch or two of salt, the lactic acid if using, nutritional yeast, and pepper and blend first on low and then speed up until the sauce is looking smooth and saucy. If it is too thick just add a little water. Adjust taste as desired. "
+        },
+        {
+          "step": 6,
+          "text": "When the sauce and pasta are done, throw the sauce in the pot you used to cook the pasta and let it warm up a bit, then add back the pasta, the pasta water, and the butter and stir to coat. Serve it up with a little vegan parm on top, maybe some vegan sausages to go with or in, but not required since you already are getting great gains from the sauce and the pasta. "
+        }
+      ],
+      "tags": [
+        "sauce",
+        "pasta",
+        "one pot"
+      ],
+      "equipment": [
+        "none"
+      ],
+      "id": 1745593868951
     }
   ]
 }
