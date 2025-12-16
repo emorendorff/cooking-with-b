@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "generate-pwa-icons": "pwa-assets-generator",
     "server": "json-server --watch db.json --port 3001",
-    "dev:full": "concurrently \"vite\" \"npm run server\""
+    "dev:full": "concurrently \"vite\" \"npm run server\"",
+    "migrate": "npx ts-node scripts/migrate-to-supabase.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.87.3",
