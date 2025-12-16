@@ -13,6 +13,7 @@
     "dev:full": "concurrently \"vite\" \"npm run server\""
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.87.3",
     "@types/styled-components": "^5.1.34",
     "cors": "^2.8.5",
     "express": "^4.21.2",
