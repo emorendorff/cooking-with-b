@@ -9,8 +9,6 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "generate-pwa-icons": "pwa-assets-generator",
-    "server": "json-server --watch db.json --port 3001",
-    "dev:full": "concurrently \"vite\" \"npm run server\"",
     "migrate": "npx ts-node scripts/migrate-to-supabase.ts"
   },
   "dependencies": {
