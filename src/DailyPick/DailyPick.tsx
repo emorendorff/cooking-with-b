@@ -1,5 +1,7 @@
-import styled from "styled-components";
-import { recipes } from "../recipes";
+import { useEffect, useState } from 'react'
+import styled from 'styled-components'
+import { Recipe } from '../types'
+import { getRecipes } from '../lib/api'
 
 const PreviewContainer = styled.div`
   display: flex;
@@ -9,30 +11,72 @@ const PreviewContainer = styled.div`
   margin-bottom: 32px;
   background-color: #c6b7a8;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-`;
+`
 
 export const ImageBox = styled.div`
   display: flex;
   height: 250px;
   overflow: hidden;
-`;
+  background-color: #e0d6c8;
+  border-radius: 4px;
+`
+
 const DailyImage = styled.img`
   height: 100%;
   width: 100%;
   object-fit: cover;
-`;
+`
+
+const PlaceholderImage = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8b7355;
+  font-size: 48px;
+`
+
+// Simple deterministic "random" pick based on date
+function getDailyIndex(length: number): number {
+  const today = new Date()
+  const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate()
+  return seed % length
+}
 
 const DailyPick = () => {
-  const placeholder = recipes[1];
+  const [recipe, setRecipe] = useState<Recipe | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchDailyPick() {
+      try {
+        const recipes = await getRecipes()
+        if (recipes.length > 0) {
+          const index = getDailyIndex(recipes.length)
+          setRecipe(recipes[index])
+        }
+      } catch (err) {
+        console.error('Failed to fetch daily pick:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchDailyPick()
+  }, [])
+
+  if (loading) return <PreviewContainer>Loading today's pick...</PreviewContainer>
+  if (!recipe) return null
+
   return (
     <PreviewContainer>
       <ImageBox>
-        <DailyImage src={placeholder.image} alt="Green sauce flowers" />
+        <PlaceholderImage>🍽️</PlaceholderImage>
       </ImageBox>
-      <h2>Today's Pick</h2>
-      <p>{placeholder.tagline}</p>
+      <h2>Today's Pick: {recipe.name}</h2>
+      <p>{recipe.tagline}</p>
     </PreviewContainer>
-  );
-};
+  )
+}
 
-export default DailyPick;
+export default DailyPick

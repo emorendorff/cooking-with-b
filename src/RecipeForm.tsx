@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import { Recipe } from "./recipes";
+import { useState, useEffect } from 'react'
+import styled from 'styled-components'
+import { RecipeFormData, IngredientFormData, Instruction, Recipe } from './types'
+import { getRecipes } from './lib/api'
 
 const FormContainer = styled.div`
   max-width: 800px;
@@ -9,26 +10,26 @@ const FormContainer = styled.div`
   background-color: #f4f1e1;
   border-radius: 8px;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-`;
+`
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 16px;
-`;
+`
 
 const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-`;
+`
 
 const Label = styled.label`
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 14px;
   color: #484848;
-`;
+`
 
 const Input = styled.input`
   padding: 8px 12px;
@@ -36,7 +37,15 @@ const Input = styled.input`
   border-radius: 4px;
   font-family: var(--font-secondary);
   font-size: 14px;
-`;
+`
+
+const Select = styled.select`
+  padding: 8px 12px;
+  border: 1px solid #c6b7a8;
+  border-radius: 4px;
+  font-family: var(--font-secondary);
+  font-size: 14px;
+`
 
 const TextArea = styled.textarea`
   padding: 8px 12px;
@@ -45,7 +54,7 @@ const TextArea = styled.textarea`
   font-family: var(--font-secondary);
   font-size: 14px;
   min-height: 50px;
-`;
+`
 
 const Button = styled.button`
   background-color: #6a0d2b;
@@ -62,19 +71,20 @@ const Button = styled.button`
   &:hover {
     background-color: #8a1d3b;
   }
-`;
+`
 
 const DynamicFieldsContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
-`;
+`
 
 const DynamicField = styled.div`
   display: flex;
   gap: 8px;
   align-items: center;
-`;
+  flex-wrap: wrap;
+`
 
 const RemoveButton = styled.button`
   background-color: #d18b4f;
@@ -84,7 +94,7 @@ const RemoveButton = styled.button`
   padding: 4px 8px;
   font-size: 12px;
   cursor: pointer;
-`;
+`
 
 const AddButton = styled.button`
   background-color: #c6b7a8;
@@ -96,187 +106,171 @@ const AddButton = styled.button`
   margin-top: 8px;
   cursor: pointer;
   align-self: flex-start;
-`;
+`
+
+const ToggleButton = styled.button<{ active: boolean }>`
+  background-color: ${props => props.active ? '#6a0d2b' : '#c6b7a8'};
+  color: ${props => props.active ? 'white' : '#484848'};
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+`
 
 interface RecipeFormProps {
-  onSubmit: (recipe: Partial<Recipe>) => void;
+  onSubmit: (recipe: RecipeFormData, ingredients: IngredientFormData[]) => void
+  initialData?: RecipeFormData
+  initialIngredients?: IngredientFormData[]
 }
 
-const initialValues: Partial<Recipe> = {
-  name: "",
-  tagline: "",
-  servings: 4,
-  prepTime: { value: 0, unit: "minutes" },
-  cookTime: { value: 0, unit: "minutes" },
-  totalTime: { value: 0, unit: "minutes" },
-  difficulty: "easy",
-  ingredients: [{ item: "", amount: 0, unit: "", notes: "" }],
-  instructions: [{ step: 1, text: "" }],
-  tags: [""],
-  equipment: [""]
-};
+const emptyIngredient: IngredientFormData = {
+  item: '',
+  amount: '',
+  unit: '',
+  linked_recipe_id: null,
+  isLinkedRecipe: false,
+}
 
-const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
-  const [recipe, setRecipe] = useState<Partial<Recipe>>(initialValues);
+const emptyInstruction: Instruction = { step: 1, text: '' }
+
+const initialFormData: RecipeFormData = {
+  name: '',
+  tagline: '',
+  servings: '',
+  prep_time: '',
+  cook_time: '',
+  total_time: '',
+  difficulty: 'easy',
+  instructions: [emptyInstruction],
+  equipment: [''],
+  tags: [''],
+}
+
+const RecipeForm = ({ onSubmit, initialData, initialIngredients }: RecipeFormProps) => {
+  const [formData, setFormData] = useState<RecipeFormData>(initialData || initialFormData)
+  const [ingredients, setIngredients] = useState<IngredientFormData[]>(
+    initialIngredients || [emptyIngredient]
+  )
+  const [availableRecipes, setAvailableRecipes] = useState<Recipe[]>([])
+
+  useEffect(() => {
+    getRecipes().then(setAvailableRecipes).catch(console.error)
+  }, [])
+
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
 
-    if (name.includes(".")) {
-      const [parent, child] = name.split(".");
-      const parentValue = recipe[parent as keyof Recipe];
-      if (parentValue && typeof parentValue === "object") {
-        setRecipe({
-          ...recipe,
-          [parent]: {
-            ...parentValue,
-            [child]: value
-          }
-        });
-      }
-    } else {
-      setRecipe({ ...recipe, [name]: value });
-    }
-  };
+  // Ingredient handlers
+  const handleIngredientChange = (index: number, field: keyof IngredientFormData, value: string | boolean) => {
+    setIngredients(prev => prev.map((ing, i) =>
+      i === index ? { ...ing, [field]: value } : ing
+    ))
+  }
 
-  const handleTimeChange = (
-    field: "prepTime" | "cookTime" | "totalTime",
-    type: "value" | "unit",
-    value: string
-  ) => {
-    setRecipe({
-      ...recipe,
-      [field]: {
-        ...recipe[field],
-        [type]: type === "value" ? parseInt(value) : value
-      }
-    });
-  };
-
-  const handleIngredientChange = (
-    index: number,
-    field: string,
-    value: string
-  ) => {
-    const updatedIngredients = recipe.ingredients?.map((ingredient, i) => {
-      if (i === index) {
-        return {
-          ...ingredient,
-          [field]: field === "amount" ? parseFloat(value) : value
-        };
-      }
-      return ingredient;
-    });
-
-    setRecipe({ ...recipe, ingredients: updatedIngredients });
-  };
+  const toggleIngredientType = (index: number) => {
+    setIngredients(prev => prev.map((ing, i) =>
+      i === index ? {
+        ...ing,
+        isLinkedRecipe: !ing.isLinkedRecipe,
+        item: '',
+        unit: '',
+        linked_recipe_id: null,
+      } : ing
+    ))
+  }
 
   const addIngredient = () => {
-    if (recipe.ingredients) {
-      setRecipe({
-        ...recipe,
-        ingredients: [
-          ...recipe.ingredients,
-          { item: "", amount: 0, unit: "", notes: "" }
-        ]
-      });
-    }
-  };
+    setIngredients(prev => [...prev, emptyIngredient])
+  }
 
   const removeIngredient = (index: number) => {
-    if (recipe.ingredients && recipe.ingredients.length > 1) {
-      const updatedIngredients = recipe.ingredients.filter(
-        (_, i) => i !== index
-      );
-      setRecipe({ ...recipe, ingredients: updatedIngredients });
+    if (ingredients.length > 1) {
+      setIngredients(prev => prev.filter((_, i) => i !== index))
     }
-  };
+  }
 
+  // Instruction handlers
   const handleInstructionChange = (index: number, text: string) => {
-    const updatedInstructions = recipe.instructions?.map((instruction, i) => {
-      if (i === index) {
-        return { ...instruction, text };
-      }
-      return instruction;
-    });
-
-    setRecipe({ ...recipe, instructions: updatedInstructions });
-  };
+    setFormData(prev => ({
+      ...prev,
+      instructions: prev.instructions.map((inst, i) =>
+        i === index ? { ...inst, text } : inst
+      ),
+    }))
+  }
 
   const addInstruction = () => {
-    if (recipe.instructions) {
-      const nextStep = recipe.instructions.length + 1;
-      setRecipe({
-        ...recipe,
-        instructions: [...recipe.instructions, { step: nextStep, text: "" }]
-      });
-    }
-  };
+    setFormData(prev => ({
+      ...prev,
+      instructions: [
+        ...prev.instructions,
+        { step: prev.instructions.length + 1, text: '' },
+      ],
+    }))
+  }
 
   const removeInstruction = (index: number) => {
-    if (recipe.instructions && recipe.instructions.length > 1) {
-      const updatedInstructions = recipe.instructions
-        .filter((_, i) => i !== index)
-        .map((instruction, i) => ({ ...instruction, step: i + 1 }));
-
-      setRecipe({ ...recipe, instructions: updatedInstructions });
+    if (formData.instructions.length > 1) {
+      setFormData(prev => ({
+        ...prev,
+        instructions: prev.instructions
+          .filter((_, i) => i !== index)
+          .map((inst, i) => ({ ...inst, step: i + 1 })),
+      }))
     }
-  };
+  }
 
+  // Tag handlers
   const handleTagChange = (index: number, value: string) => {
-    const updatedTags = recipe.tags?.map((tag, i) =>
-      i === index ? value : tag
-    );
-    setRecipe({ ...recipe, tags: updatedTags });
-  };
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.map((tag, i) => (i === index ? value : tag)),
+    }))
+  }
 
   const addTag = () => {
-    if (recipe.tags) {
-      setRecipe({ ...recipe, tags: [...recipe.tags, ""] });
-    }
-  };
+    setFormData(prev => ({ ...prev, tags: [...prev.tags, ''] }))
+  }
 
   const removeTag = (index: number) => {
-    if (recipe.tags && recipe.tags.length > 1) {
-      const updatedTags = recipe.tags.filter((_, i) => i !== index);
-      setRecipe({ ...recipe, tags: updatedTags });
+    if (formData.tags.length > 1) {
+      setFormData(prev => ({
+        ...prev,
+        tags: prev.tags.filter((_, i) => i !== index),
+      }))
     }
-  };
+  }
 
+  // Equipment handlers
   const handleEquipmentChange = (index: number, value: string) => {
-    const updatedEquipment = recipe.equipment?.map((item, i) =>
-      i === index ? value : item
-    );
-    setRecipe({ ...recipe, equipment: updatedEquipment });
-  };
+    setFormData(prev => ({
+      ...prev,
+      equipment: prev.equipment.map((item, i) => (i === index ? value : item)),
+    }))
+  }
 
   const addEquipment = () => {
-    if (recipe.equipment) {
-      setRecipe({ ...recipe, equipment: [...recipe.equipment, ""] });
-    }
-  };
+    setFormData(prev => ({ ...prev, equipment: [...prev.equipment, ''] }))
+  }
 
   const removeEquipment = (index: number) => {
-    if (recipe.equipment && recipe.equipment.length > 1) {
-      const updatedEquipment = recipe.equipment.filter((_, i) => i !== index);
-      setRecipe({ ...recipe, equipment: updatedEquipment });
+    if (formData.equipment.length > 1) {
+      setFormData(prev => ({
+        ...prev,
+        equipment: prev.equipment.filter((_, i) => i !== index),
+      }))
     }
-  };
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Generate a unique ID if creating a new recipe
-    const recipeWithId = {
-      ...recipe,
-      id: Date.now()
-    };
-    onSubmit(recipeWithId);
-    // Reset the form after submission
-    setRecipe(initialValues);
-  };
+    e.preventDefault()
+    onSubmit(formData, ingredients)
+  }
 
   return (
     <FormContainer>
@@ -287,7 +281,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
             type="text"
             id="name"
             name="name"
-            value={recipe.name}
+            value={formData.name}
             onChange={handleChange}
             required
           />
@@ -299,134 +293,127 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
             type="text"
             id="tagline"
             name="tagline"
-            value={recipe.tagline}
+            value={formData.tagline}
             onChange={handleChange}
-            required
           />
         </FormGroup>
 
         <FormGroup>
           <Label htmlFor="servings">Servings</Label>
           <Input
-            type="number"
+            type="text"
             id="servings"
             name="servings"
-            min="1"
-            value={recipe.servings}
+            placeholder="e.g., 4 or 2-3"
+            value={formData.servings}
             onChange={handleChange}
           />
         </FormGroup>
 
         <FormGroup>
-          <Label>Prep Time</Label>
-          <DynamicField>
-            <Input
-              type="number"
-              min="0"
-              value={recipe.prepTime?.value}
-              onChange={(e) =>
-                handleTimeChange("prepTime", "value", e.target.value)
-              }
-              style={{ width: "80px" }}
-            />
-            <select
-              value={recipe.prepTime?.unit}
-              onChange={(e) =>
-                handleTimeChange("prepTime", "unit", e.target.value)
-              }
-            >
-              <option value="minutes">minutes</option>
-              <option value="hours">hours</option>
-            </select>
-          </DynamicField>
+          <Label htmlFor="prep_time">Prep Time</Label>
+          <Input
+            type="text"
+            id="prep_time"
+            name="prep_time"
+            placeholder="e.g., 20 minutes, overnight"
+            value={formData.prep_time}
+            onChange={handleChange}
+          />
         </FormGroup>
 
         <FormGroup>
-          <Label>Cook Time</Label>
-          <DynamicField>
-            <Input
-              type="number"
-              min="0"
-              value={recipe.cookTime?.value}
-              onChange={(e) =>
-                handleTimeChange("cookTime", "value", e.target.value)
-              }
-              style={{ width: "80px" }}
-            />
-            <select
-              value={recipe.cookTime?.unit}
-              onChange={(e) =>
-                handleTimeChange("cookTime", "unit", e.target.value)
-              }
-            >
-              <option value="minutes">minutes</option>
-              <option value="hours">hours</option>
-            </select>
-          </DynamicField>
+          <Label htmlFor="cook_time">Cook Time</Label>
+          <Input
+            type="text"
+            id="cook_time"
+            name="cook_time"
+            placeholder="e.g., 30 minutes"
+            value={formData.cook_time}
+            onChange={handleChange}
+          />
         </FormGroup>
 
         <FormGroup>
           <Label htmlFor="difficulty">Difficulty</Label>
-          <select
+          <Select
             id="difficulty"
             name="difficulty"
-            value={recipe.difficulty}
+            value={formData.difficulty}
             onChange={handleChange}
           >
             <option value="easy">Easy</option>
             <option value="medium">Medium</option>
             <option value="hard">Hard</option>
-          </select>
+          </Select>
         </FormGroup>
 
         <FormGroup>
           <Label>Ingredients</Label>
           <DynamicFieldsContainer>
-            {recipe.ingredients?.map((ingredient, index) => (
+            {ingredients.map((ingredient, index) => (
               <DynamicField key={index}>
-                <Input
-                  type="text"
-                  placeholder="Item"
-                  value={ingredient.item}
-                  onChange={(e) =>
-                    handleIngredientChange(index, "item", e.target.value)
-                  }
-                  style={{ flex: 2 }}
-                  required
-                />
-                <Input
-                  type="number"
-                  placeholder="Amount"
-                  value={ingredient.amount || ""}
-                  onChange={(e) =>
-                    handleIngredientChange(index, "amount", e.target.value)
-                  }
-                  style={{ flex: 1 }}
-                  min="0"
-                  step="0.25"
-                />
-                <Input
-                  type="text"
-                  placeholder="Unit"
-                  value={ingredient.unit}
-                  onChange={(e) =>
-                    handleIngredientChange(index, "unit", e.target.value)
-                  }
-                  style={{ flex: 1 }}
-                />
-                {/* <Input
-                  type="text"
-                  placeholder="Notes (optional)"
-                  value={ingredient.notes || ""}
-                  onChange={(e) =>
-                    handleIngredientChange(index, "notes", e.target.value)
-                  }
-                  style={{ flex: 2 }}
-                /> */}
+                <ToggleButton
+                  type="button"
+                  active={ingredient.isLinkedRecipe}
+                  onClick={() => toggleIngredientType(index)}
+                >
+                  {ingredient.isLinkedRecipe ? 'Recipe Link' : 'Ingredient'}
+                </ToggleButton>
+
+                {ingredient.isLinkedRecipe ? (
+                  <>
+                    <Input
+                      type="text"
+                      placeholder="Amount (e.g., 1 batch)"
+                      value={ingredient.amount}
+                      onChange={(e) => handleIngredientChange(index, 'amount', e.target.value)}
+                      style={{ width: '120px' }}
+                    />
+                    <Select
+                      value={ingredient.linked_recipe_id || ''}
+                      onChange={(e) => handleIngredientChange(index, 'linked_recipe_id', e.target.value)}
+                      style={{ flex: 1 }}
+                    >
+                      <option value="">Select a recipe...</option>
+                      {availableRecipes.map((recipe) => (
+                        <option key={recipe.id} value={recipe.id}>
+                          {recipe.name}
+                        </option>
+                      ))}
+                    </Select>
+                  </>
+                ) : (
+                  <>
+                    <Input
+                      type="text"
+                      placeholder="Item"
+                      value={ingredient.item}
+                      onChange={(e) => handleIngredientChange(index, 'item', e.target.value)}
+                      style={{ flex: 2 }}
+                      required={!ingredient.isLinkedRecipe}
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Amount"
+                      value={ingredient.amount}
+                      onChange={(e) => handleIngredientChange(index, 'amount', e.target.value)}
+                      style={{ width: '80px' }}
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Unit"
+                      value={ingredient.unit}
+                      onChange={(e) => handleIngredientChange(index, 'unit', e.target.value)}
+                      style={{ width: '80px' }}
+                    />
+                  </>
+                )}
+
                 <RemoveButton
                   type="button"
                   onClick={() => removeIngredient(index)}
-                  disabled={recipe.ingredients?.length === 1}
+                  disabled={ingredients.length === 1}
                 >
                   Remove
                 </RemoveButton>
@@ -441,24 +428,22 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
         <FormGroup>
           <Label>Instructions</Label>
           <DynamicFieldsContainer>
-            {recipe.instructions?.map((instruction, index) => (
+            {formData.instructions.map((instruction, index) => (
               <DynamicField key={index}>
-                <span style={{ minWidth: "30px", textAlign: "center" }}>
+                <span style={{ minWidth: '30px', textAlign: 'center' }}>
                   {instruction.step}.
                 </span>
                 <TextArea
                   placeholder="Instruction step"
                   value={instruction.text}
-                  onChange={(e) =>
-                    handleInstructionChange(index, e.target.value)
-                  }
+                  onChange={(e) => handleInstructionChange(index, e.target.value)}
                   style={{ flex: 1 }}
                   required
                 />
                 <RemoveButton
                   type="button"
                   onClick={() => removeInstruction(index)}
-                  disabled={recipe.instructions?.length === 1}
+                  disabled={formData.instructions.length === 1}
                 >
                   Remove
                 </RemoveButton>
@@ -473,7 +458,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
         <FormGroup>
           <Label>Tags</Label>
           <DynamicFieldsContainer>
-            {recipe.tags?.map((tag, index) => (
+            {formData.tags.map((tag, index) => (
               <DynamicField key={index}>
                 <Input
                   type="text"
@@ -485,7 +470,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
                 <RemoveButton
                   type="button"
                   onClick={() => removeTag(index)}
-                  disabled={recipe.tags?.length === 1}
+                  disabled={formData.tags.length === 1}
                 >
                   Remove
                 </RemoveButton>
@@ -500,7 +485,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
         <FormGroup>
           <Label>Equipment</Label>
           <DynamicFieldsContainer>
-            {recipe.equipment?.map((item, index) => (
+            {formData.equipment.map((item, index) => (
               <DynamicField key={index}>
                 <Input
                   type="text"
@@ -512,7 +497,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
                 <RemoveButton
                   type="button"
                   onClick={() => removeEquipment(index)}
-                  disabled={recipe.equipment?.length === 1}
+                  disabled={formData.equipment.length === 1}
                 >
                   Remove
                 </RemoveButton>
@@ -527,7 +512,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
         <Button type="submit">Submit Recipe</Button>
       </Form>
     </FormContainer>
-  );
-};
+  )
+}
 
-export default RecipeForm;
+export default RecipeForm
