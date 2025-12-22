@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { Add, CardView, GroceryList, Search } from "../assets";
 
 const Navigation = () => {
-  const { user, isAdmin } = useAuth();
+  const { isAdmin } = useAuth();
 
   return (
     <NavigationWrapper>
@@ -17,12 +17,10 @@ const Navigation = () => {
           <Search width={16} height={16} />
           <Link to="/recipes">Browse</Link>
         </NavItem>
-        {user && (
-          <NavItem>
-            <GroceryList width={16} height={16} />
-            <Link to="/grocery-list">Grocery List</Link>
-          </NavItem>
-        )}
+        <NavItem>
+          <GroceryList width={16} height={16} />
+          <Link to="/grocery-list">Grocery List</Link>
+        </NavItem>
         {isAdmin && (
           <NavItem>
             <Add width={16} height={16} />

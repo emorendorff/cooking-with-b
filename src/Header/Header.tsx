@@ -39,11 +39,9 @@ const Header = () => {
           Chef Boyar-<BSpan>B</BSpan>
         </h1>
       </Link>
-      {user && (
-        <SettingsLink to="/settings">
-          <Settings width={24} height={24} />
-        </SettingsLink>
-      )}
+      <SettingsLink to={user ? "/settings" : "/login"}>
+        <Settings width={24} height={24} />
+      </SettingsLink>
     </HeaderWrap>
   );
 };

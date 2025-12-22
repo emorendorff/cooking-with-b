@@ -201,7 +201,7 @@ const AddAllButton = styled.button`
 
 const RecipeDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const { user, isAdmin } = useAuth();
+  const { isAdmin } = useAuth();
   const { addRecipeIngredient, addAllRecipeIngredients } = useGroceryListContext();
   const [recipe, setRecipe] = useState<RecipeWithRelations | null>(null);
   const [loading, setLoading] = useState(true);
@@ -310,7 +310,7 @@ const RecipeDetail = () => {
 
         <Section>
           <SectionTitle>Ingredients</SectionTitle>
-          {user && recipe.ingredients.length > 0 && (
+          {recipe.ingredients.length > 0 && (
             <AddAllButton onClick={handleAddAllIngredients}>
               Add All to Grocery List
             </AddAllButton>
@@ -327,15 +327,13 @@ const RecipeDetail = () => {
                 ) : (
                   ing.item
                 )}
-                {user && (
-                  <AddButton
-                    $added={addedItems.has(ing.id)}
-                    onClick={() => handleAddIngredient(ing)}
-                    title="Add to grocery list"
-                  >
-                    {addedItems.has(ing.id) ? "✓" : "+"}
-                  </AddButton>
-                )}
+                <AddButton
+                  $added={addedItems.has(ing.id)}
+                  onClick={() => handleAddIngredient(ing)}
+                  title="Add to grocery list"
+                >
+                  {addedItems.has(ing.id) ? "✓" : "+"}
+                </AddButton>
               </IngredientItem>
             ))}
           </IngredientList>

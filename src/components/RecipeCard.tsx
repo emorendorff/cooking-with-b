@@ -1,6 +1,16 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { RecipeWithRelations } from "../types";
+
+const shimmer = keyframes`
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+`;
 
 const CardLink = styled(Link)`
   text-decoration: none;
@@ -25,17 +35,38 @@ const CardContainer = styled.div`
 `;
 
 const ImageBox = styled.div`
-  display: flex;
+  position: relative;
   height: 100px;
   overflow: hidden;
   background-color: #e0d6c8;
   border-radius: 4px;
 `;
 
-const Image = styled.img`
+const SkeletonOverlay = styled.div<{ $isLoading: boolean }>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    #e0d6c8 0%,
+    #f0ebe3 50%,
+    #e0d6c8 100%
+  );
+  background-size: 200% 100%;
+  animation: ${shimmer} 1.5s ease-in-out infinite;
+  opacity: ${(props) => (props.$isLoading ? 1 : 0)};
+  transition: opacity 0.3s ease-out;
+  pointer-events: none;
+`;
+
+const Image = styled.img<{ $isLoaded: boolean }>`
   min-height: 100%;
   object-fit: cover;
   width: 100%;
+  opacity: ${(props) => (props.$isLoaded ? 1 : 0)};
+  transition: opacity 0.3s ease-in;
 `;
 
 const RecipeName = styled.h3`
@@ -56,6 +87,7 @@ interface RecipeCardProps {
 }
 
 const RecipeCard = ({ recipe }: RecipeCardProps) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
   const primaryImage = recipe.images?.find((img) => img.role === "primary")?.url;
 
   return (
@@ -63,7 +95,13 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
       <CardContainer>
         {primaryImage && (
           <ImageBox>
-            <Image src={primaryImage} alt={recipe.name} />
+            <SkeletonOverlay $isLoading={!imageLoaded} />
+            <Image
+              src={primaryImage}
+              alt={recipe.name}
+              $isLoaded={imageLoaded}
+              onLoad={() => setImageLoaded(true)}
+            />
           </ImageBox>
         )}
         <RecipeName>{recipe.name}</RecipeName>
