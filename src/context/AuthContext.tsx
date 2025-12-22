@@ -21,19 +21,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        fetchProfile(session.user.id)
-      } else {
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        setUser(session?.user ?? null)
+        if (session?.user) {
+          fetchProfile(session.user.id)
+        } else {
+          setIsLoading(false)
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to get session:', err)
         setIsLoading(false)
-      }
-    })
+      })
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (_event, session) => {
         setUser(session?.user ?? null)
         if (session?.user) {
           await fetchProfile(session.user.id)
@@ -48,13 +51,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   async function fetchProfile(userId: string) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single()
-
-    setProfile(data)
+    try {
+      const url = import.meta.env.VITE_SUPABASE_URL
+      const key = import.meta.env.VITE_SUPABASE_ANON_KEY
+      const response = await fetch(`${url}/rest/v1/profiles?id=eq.${userId}&select=*`, {
+        headers: {
+          'apikey': key,
+          'Authorization': `Bearer ${key}`,
+        }
+      })
+      if (response.ok) {
+        const profiles = await response.json()
+        setProfile(profiles[0] || null)
+      }
+    } catch (error) {
+      console.error('Failed to fetch profile:', error)
+    }
     setIsLoading(false)
   }
 

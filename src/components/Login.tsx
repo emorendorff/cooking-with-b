@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { useAuth } from '../context/AuthContext'
 
@@ -60,6 +61,7 @@ const ErrorMessage = styled.div`
 `
 
 const Login = () => {
+  const navigate = useNavigate()
   const { signIn, signUp } = useAuth()
   const [isSignUp, setIsSignUp] = useState(false)
   const [email, setEmail] = useState('')
@@ -79,6 +81,7 @@ const Login = () => {
       } else {
         await signIn(email, password)
       }
+      navigate('/')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
