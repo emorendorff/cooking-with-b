@@ -10,70 +10,108 @@ import type {
 
 // ============ RECIPES ============
 
-export async function getRecipes(): Promise<Recipe[]> {
-  const { data, error } = await supabase
-    .from('recipes')
-    .select('*')
-    .order('created_at', { ascending: false })
+export async function getRecipes(): Promise<RecipeWithRelations[]> {
+  try {
+    const url = import.meta.env.VITE_SUPABASE_URL
+    const key = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-  if (error) throw error
-  return data as unknown as Recipe[]
+    // Fetch recipes with their images
+    const response = await fetch(
+      `${url}/rest/v1/recipes?select=*,images(*)&order=created_at.desc`,
+      {
+        headers: {
+          'apikey': key,
+          'Authorization': `Bearer ${key}`,
+        }
+      }
+    )
+    const data = await response.json()
+
+    // Filter to only recipes that have at least one image
+    const recipesWithImages = data.filter(
+      (recipe: RecipeWithRelations) => recipe.images && recipe.images.length > 0
+    )
+
+    return recipesWithImages as RecipeWithRelations[]
+  } catch (err) {
+    console.error('API: Direct fetch error', err)
+    throw err
+  }
 }
 
 export async function getRecipe(id: string): Promise<RecipeWithRelations> {
-  const { data: recipe, error: recipeError } = await supabase
-    .from('recipes')
-    .select('*')
-    .eq('id', id)
-    .single()
+  const url = import.meta.env.VITE_SUPABASE_URL
+  const key = import.meta.env.VITE_SUPABASE_ANON_KEY
+  const headers = {
+    'apikey': key,
+    'Authorization': `Bearer ${key}`,
+  }
 
-  if (recipeError) throw recipeError
+  // Fetch recipe
+  const recipeRes = await fetch(`${url}/rest/v1/recipes?id=eq.${id}&select=*`, { headers })
+  if (!recipeRes.ok) throw new Error('Failed to fetch recipe')
+  const recipes = await recipeRes.json()
+  if (recipes.length === 0) throw new Error('Recipe not found')
+  const recipe = recipes[0]
 
-  // Fetch ingredients with linked recipe names
-  const { data: ingredients, error: ingError } = await supabase
-    .from('ingredients')
-    .select(`
-      *,
-      linked_recipe:recipes!ingredients_linked_recipe_id_fkey (id, name)
-    `)
-    .eq('recipe_id', id)
-    .order('sort_order')
+  // Fetch ingredients
+  const ingRes = await fetch(`${url}/rest/v1/ingredients?recipe_id=eq.${id}&select=*&order=sort_order`, { headers })
+  const ingredients = ingRes.ok ? await ingRes.json() : []
 
-  if (ingError) throw ingError
+  // Fetch linked recipe names for ingredients that have linked_recipe_id
+  const linkedIds = ingredients.filter((i: { linked_recipe_id: string | null }) => i.linked_recipe_id).map((i: { linked_recipe_id: string }) => i.linked_recipe_id)
+  let linkedRecipes: Record<string, { id: string; name: string }> = {}
+  if (linkedIds.length > 0) {
+    const linkedRes = await fetch(`${url}/rest/v1/recipes?id=in.(${linkedIds.join(',')})&select=id,name`, { headers })
+    if (linkedRes.ok) {
+      const linked = await linkedRes.json()
+      linkedRecipes = Object.fromEntries(linked.map((r: { id: string; name: string }) => [r.id, r]))
+    }
+  }
+
+  // Add linked_recipe to ingredients
+  const ingredientsWithLinked = ingredients.map((ing: { linked_recipe_id: string | null }) => ({
+    ...ing,
+    linked_recipe: ing.linked_recipe_id ? linkedRecipes[ing.linked_recipe_id] : null
+  }))
 
   // Fetch images
-  const { data: images, error: imgError } = await supabase
-    .from('images')
-    .select('*')
-    .eq('recipe_id', id)
-    .order('sort_order')
+  const imgRes = await fetch(`${url}/rest/v1/images?recipe_id=eq.${id}&select=*&order=sort_order`, { headers })
+  const images = imgRes.ok ? await imgRes.json() : []
 
-  if (imgError) throw imgError
+  // Fetch reviews
+  const revRes = await fetch(`${url}/rest/v1/reviews?recipe_id=eq.${id}&select=*&order=created_at.desc`, { headers })
+  const reviews = revRes.ok ? await revRes.json() : []
 
-  // Fetch reviews with profile names
-  const { data: reviews, error: revError } = await supabase
-    .from('reviews')
-    .select(`
-      *,
-      profile:user_id (display_name)
-    `)
-    .eq('recipe_id', id)
-    .order('created_at', { ascending: false })
+  // Fetch profile names for reviews
+  const userIds = reviews.map((r: { user_id: string }) => r.user_id)
+  let profiles: Record<string, { display_name: string }> = {}
+  if (userIds.length > 0) {
+    const profileRes = await fetch(`${url}/rest/v1/profiles?id=in.(${userIds.join(',')})&select=id,display_name`, { headers })
+    if (profileRes.ok) {
+      const profileData = await profileRes.json()
+      profiles = Object.fromEntries(profileData.map((p: { id: string; display_name: string }) => [p.id, p]))
+    }
+  }
 
-  if (revError) throw revError
+  // Add profile to reviews
+  const reviewsWithProfile = reviews.map((rev: { user_id: string }) => ({
+    ...rev,
+    profile: profiles[rev.user_id] || null
+  }))
 
   // Calculate average rating
   const average_rating = reviews.length > 0
-    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+    ? reviews.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) / reviews.length
     : undefined
 
   return {
     ...recipe,
-    ingredients: (ingredients || []) as unknown as any,
-    images: (images || []) as unknown as RecipeImage[],
-    reviews: (reviews || []) as unknown as Review[],
+    ingredients: ingredientsWithLinked,
+    images: images as RecipeImage[],
+    reviews: reviewsWithProfile as Review[],
     average_rating,
-  } as unknown as RecipeWithRelations
+  } as RecipeWithRelations
 }
 
 export async function createRecipe(

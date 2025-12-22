@@ -26,9 +26,9 @@ const TagsContainer = styled.div`
   gap: 8px;
 `
 
-const TagChip = styled.button<{ selected: boolean }>`
-  background-color: ${props => props.selected ? '#6a0d2b' : '#c6b7a8'};
-  color: ${props => props.selected ? 'white' : '#484848'};
+const TagChip = styled.button<{ $selected: boolean }>`
+  background-color: ${props => props.$selected ? '#6a0d2b' : '#c6b7a8'};
+  color: ${props => props.$selected ? 'white' : '#484848'};
   border: none;
   border-radius: 16px;
   padding: 6px 12px;
@@ -37,7 +37,7 @@ const TagChip = styled.button<{ selected: boolean }>`
   transition: all 0.2s;
 
   &:hover {
-    background-color: ${props => props.selected ? '#8a1d3b' : '#b5a699'};
+    background-color: ${props => props.$selected ? '#8a1d3b' : '#b5a699'};
   }
 `
 
@@ -82,7 +82,7 @@ const SearchBar = ({ onSearch, onTagsChange, selectedTags }: SearchBarProps) => 
           {availableTags.map(tag => (
             <TagChip
               key={tag}
-              selected={selectedTags.includes(tag)}
+              $selected={selectedTags.includes(tag)}
               onClick={() => toggleTag(tag)}
             >
               {tag}

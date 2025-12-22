@@ -108,9 +108,9 @@ const AddButton = styled.button`
   align-self: flex-start;
 `
 
-const ToggleButton = styled.button<{ active: boolean }>`
-  background-color: ${props => props.active ? '#6a0d2b' : '#c6b7a8'};
-  color: ${props => props.active ? 'white' : '#484848'};
+const ToggleButton = styled.button<{ $active: boolean }>`
+  background-color: ${props => props.$active ? '#6a0d2b' : '#c6b7a8'};
+  color: ${props => props.$active ? 'white' : '#484848'};
   border: none;
   border-radius: 4px;
   padding: 4px 8px;
@@ -355,7 +355,7 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients }: RecipeFormPro
               <DynamicField key={index}>
                 <ToggleButton
                   type="button"
-                  active={ingredient.isLinkedRecipe}
+                  $active={ingredient.isLinkedRecipe}
                   onClick={() => toggleIngredientType(index)}
                 >
                   {ingredient.isLinkedRecipe ? 'Recipe Link' : 'Ingredient'}

@@ -34,13 +34,13 @@ const ImageGrid = styled.div`
   gap: 12px;
 `
 
-const ImageCard = styled.div<{ role: string | null }>`
+const ImageCard = styled.div<{ $role: string | null }>`
   position: relative;
   border-radius: 8px;
   overflow: hidden;
   border: 3px solid ${props =>
-    props.role === 'primary' ? '#6a0d2b' :
-    props.role === 'secondary' ? '#d18b4f' :
+    props.$role === 'primary' ? '#6a0d2b' :
+    props.$role === 'secondary' ? '#d18b4f' :
     'transparent'
   };
 `
@@ -58,15 +58,15 @@ const ImageActions = styled.div`
   background-color: #f4f1e1;
 `
 
-const ActionButton = styled.button<{ active?: boolean }>`
+const ActionButton = styled.button<{ $active?: boolean }>`
   flex: 1;
   padding: 4px;
   font-size: 11px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  background-color: ${props => props.active ? '#6a0d2b' : '#c6b7a8'};
-  color: ${props => props.active ? 'white' : '#484848'};
+  background-color: ${props => props.$active ? '#6a0d2b' : '#c6b7a8'};
+  color: ${props => props.$active ? 'white' : '#484848'};
 
   &:hover {
     opacity: 0.8;
@@ -178,13 +178,13 @@ const ImageUpload = ({ recipeId, images, onImagesChange }: ImageUploadProps) => 
       {images.length > 0 && (
         <ImageGrid>
           {images.map(image => (
-            <ImageCard key={image.id} role={image.role}>
+            <ImageCard key={image.id} $role={image.role}>
               <Thumbnail src={image.url} alt="" />
               {image.role && <RoleBadge>{image.role}</RoleBadge>}
               <DeleteButton onClick={() => handleDelete(image)}>x</DeleteButton>
               <ImageActions>
                 <ActionButton
-                  active={image.role === 'primary'}
+                  $active={image.role === 'primary'}
                   onClick={() => handleRoleChange(
                     image.id,
                     image.role === 'primary' ? null : 'primary'
@@ -193,7 +193,7 @@ const ImageUpload = ({ recipeId, images, onImagesChange }: ImageUploadProps) => 
                   Primary
                 </ActionButton>
                 <ActionButton
-                  active={image.role === 'secondary'}
+                  $active={image.role === 'secondary'}
                   onClick={() => handleRoleChange(
                     image.id,
                     image.role === 'secondary' ? null : 'secondary'
