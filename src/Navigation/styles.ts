@@ -1,7 +1,5 @@
 import styled from "styled-components";
 
-// #4c6a35;
-
 export const NavigationWrapper = styled.nav`
   position: fixed;
   bottom: 0;
@@ -15,14 +13,27 @@ export const NavigationWrapper = styled.nav`
 
 export const NavList = styled.ul`
   display: flex;
+  justify-content: space-around;
   list-style: none;
   margin: 0;
   padding: 0;
+  height: 100%;
 `;
 
 export const NavItem = styled.li`
   color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   text-decoration: none;
-  padding: 16px;
+  padding: 8px 16px;
+  gap: 4px;
+
+  a {
+    color: white;
+    text-decoration: none;
+    font-size: 12px;
+  }
 `;

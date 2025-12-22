@@ -10,6 +10,7 @@ import EditRecipe from "./pages/EditRecipe.tsx";
 import BrowseRecipes from "./pages/BrowseRecipes.tsx";
 import GroceryList from "./pages/GroceryList.tsx";
 import styled from "styled-components";
+import Settings from "./pages/Settings.tsx";
 
 const PageWrapper = styled.div`
   padding-top: 64px;
@@ -20,7 +21,7 @@ const PageWrapper = styled.div`
 const LoginPage = () => (
   <PageWrapper>
     <Header />
-    <div style={{ padding: '16px' }}>
+    <div style={{ padding: "16px" }}>
       <Login />
     </div>
     <Navigation />
@@ -38,6 +39,7 @@ function App() {
         <Route path="/recipes/:id" element={<RecipeDetail />} />
         <Route path="/recipes/:id/edit" element={<EditRecipe />} />
         <Route path="/grocery-list" element={<GroceryList />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
       <Navigation />
     </Router>
