@@ -1,18 +1,17 @@
 import DailyPick from "./DailyPick/DailyPick";
 import Header from "./Header/Header";
 import Navigation from "./Navigation/Navigation";
-import { MainContent, PageContainer } from "./pages/styles";
 import RecipeBrowser from "./RecipeBrowser/RecipeBrowser";
 
 const HomePage = () => (
-  <PageContainer>
+  <div className="flex flex-col min-h-screen">
     <Header />
-    <MainContent>
+    <main className="flex-1 overflow-y-auto p-4 mt-16 mb-16">
       <DailyPick />
       <RecipeBrowser />
-    </MainContent>
+    </main>
     <Navigation />
-  </PageContainer>
+  </div>
 );
 
 export default HomePage;

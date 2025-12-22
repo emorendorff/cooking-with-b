@@ -1,41 +1,10 @@
 import { useEffect, useState } from "react";
-import styled from "styled-components";
 import { RecipeWithRelations } from "../types";
 import { getRecipes } from "../lib/api";
 import SearchBar from "../components/SearchBar";
 import RecipeCard from "../components/RecipeCard";
 import Header from "../Header/Header";
 import Navigation from "../Navigation/Navigation";
-
-const PageWrapper = styled.div`
-  padding-top: 64px;
-  padding-bottom: 64px;
-  min-height: 100vh;
-`;
-
-const Container = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 16px;
-`;
-
-const Title = styled.h1`
-  margin-bottom: 24px;
-  color: #484848;
-`;
-
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
-  gap: 16px;
-  justify-items: center;
-`;
-
-const NoResults = styled.p`
-  text-align: center;
-  color: #666;
-  margin-top: 32px;
-`;
 
 const BrowseRecipes = () => {
   const [recipes, setRecipes] = useState<RecipeWithRelations[]>([]);
@@ -64,7 +33,6 @@ const BrowseRecipes = () => {
   useEffect(() => {
     let result = recipes;
 
-    // Filter by search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       result = result.filter(
@@ -74,7 +42,6 @@ const BrowseRecipes = () => {
       );
     }
 
-    // Filter by selected tags
     if (selectedTags.length > 0) {
       result = result.filter((recipe) =>
         selectedTags.every((tag) => recipe.tags?.includes(tag))
@@ -85,43 +52,43 @@ const BrowseRecipes = () => {
   }, [searchQuery, selectedTags, recipes]);
 
   if (loading) return (
-    <PageWrapper>
+    <div className="pt-16 pb-16 min-h-screen">
       <Header />
-      <Container>Loading recipes...</Container>
+      <div className="max-w-5xl mx-auto p-4">Loading recipes...</div>
       <Navigation />
-    </PageWrapper>
+    </div>
   );
 
   if (error) return (
-    <PageWrapper>
+    <div className="pt-16 pb-16 min-h-screen">
       <Header />
-      <Container>Error: {error}</Container>
+      <div className="max-w-5xl mx-auto p-4">Error: {error}</div>
       <Navigation />
-    </PageWrapper>
+    </div>
   );
 
   return (
-    <PageWrapper>
+    <div className="pt-16 pb-16 min-h-screen">
       <Header />
-      <Container>
-        <Title>Browse Recipes</Title>
+      <div className="max-w-5xl mx-auto p-4">
+        <h1 className="mb-6 text-gray-700">Browse Recipes</h1>
         <SearchBar
           onSearch={setSearchQuery}
           onTagsChange={setSelectedTags}
           selectedTags={selectedTags}
         />
         {filteredRecipes.length === 0 ? (
-          <NoResults>No recipes found matching your criteria.</NoResults>
+          <p className="text-center text-gray-500 mt-8">No recipes found matching your criteria.</p>
         ) : (
-          <Grid>
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(175px,1fr))] gap-4 justify-items-center">
             {filteredRecipes.map((recipe) => (
               <RecipeCard key={recipe.id} recipe={recipe} />
             ))}
-          </Grid>
+          </div>
         )}
-      </Container>
+      </div>
       <Navigation />
-    </PageWrapper>
+    </div>
   );
 };
 

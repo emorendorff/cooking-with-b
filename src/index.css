@@ -1,39 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+  --color-burgundy: #6a0d2b;
+  --color-burgundy-hover: #8a1d3b;
+  --color-copper: #d18b4f;
+  --color-cream: #f4f1e1;
+  --color-tan: #c6b7a8;
+  --color-tan-hover: #b5a699;
+  --color-tan-light: #e0d6c8;
+  --color-tan-lighter: #f0ebe3;
+  --color-brown: #8b7355;
+
+  --font-display: "Montserrat", sans-serif;
+  --font-secondary: "Open Sans", sans-serif;
+  --font-primary: "EB Garamond", serif;
+}
+
 :root {
-  --font-primary:  "EB Garamond", serif;
+  --font-primary: "EB Garamond", serif;
   --font-secondary: "Open Sans", sans-serif;
   --font-display: "Montserrat", sans-serif;
   --font-mono: "Source Code Pro", monospace;
   --font-header: "EB Garamond", serif;
+}
 
-  /* Default font */
+body {
+  background-color: var(--color-cream);
+  color: #374151;
   font-family: var(--font-primary);
   line-height: 1.5;
   font-weight: 400;
   margin: 0;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #F4F1E1;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  width: 100%;
 }
 
 #root {
@@ -52,41 +53,77 @@ body {
   }
 }
 
-.test {
-  margin-right: 10px
-}
-
 h1 {
-  font-size: 20px;
-  color: #484848;
+  font-size: 1.25rem;
+  color: #374151;
   text-align: center;
   font-weight: bold;
 }
 
 h2 {
-  font-size: 18px;
-  color: #6A0D2B;
+  font-size: 1.125rem;
+  color: var(--color-burgundy);
   text-transform: uppercase;
-  margin: 8px 0;
+  margin: 0.5rem 0;
   text-align: center;
 }
 
 p {
-  font-size: 12px;
+  font-size: 0.75rem;
   font-family: var(--font-secondary);
   color: white;
   margin: 0;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+/* Shimmer animation for loading states */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Carousel custom styles */
+.carousel-container .react-multi-carousel-arrow {
+  background: rgba(106, 13, 43, 0.8);
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.carousel-container .react-multi-carousel-arrow:hover {
+  background: rgba(106, 13, 43, 1);
+}
+
+.carousel-container .react-multi-carousel-arrow--left {
+  left: 4px;
+}
+
+.carousel-container .react-multi-carousel-arrow--right {
+  right: 4px;
+}
+
+.carousel-container .react-multi-carousel-dot-list {
+  bottom: -8px;
+  display: none;
+}
+
+.carousel-container .react-multi-carousel-dot button {
+  background: #c6b7a8;
+  border: none;
+}
+
+.carousel-container .react-multi-carousel-dot--active button {
+  background: #6a0d2b;
+}
+
+@media (max-width: 600px) {
+  .carousel-container .react-multi-carousel-arrow {
+    display: none;
   }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
+
+  .carousel-container .react-multi-carousel-dot-list {
+    display: flex;
   }
 }

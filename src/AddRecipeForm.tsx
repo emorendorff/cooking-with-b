@@ -5,7 +5,6 @@ import Navigation from "./Navigation/Navigation";
 import { RecipeFormData, IngredientFormData } from "./types";
 import { createRecipe } from "./lib/api";
 import { useAuth } from "./context/AuthContext";
-import { MainContent, PageContainer, StatusMessage } from "./pages/styles";
 
 const AddRecipePage = () => {
   const { isAdmin } = useAuth();
@@ -37,33 +36,35 @@ const AddRecipePage = () => {
 
   if (!isAdmin) {
     return (
-      <PageContainer>
+      <div className="flex flex-col min-h-screen">
         <Header />
-        <MainContent>
+        <main className="flex-1 overflow-y-auto p-4 mt-16 mb-16">
           <h2>Add a New Recipe</h2>
-          <StatusMessage $success={false}>
+          <div className="my-5 mx-auto max-w-3xl p-3 rounded bg-red-100 text-red-600">
             You must be an admin to add recipes.
-          </StatusMessage>
-        </MainContent>
+          </div>
+        </main>
         <Navigation />
-      </PageContainer>
+      </div>
     );
   }
 
   return (
-    <PageContainer>
+    <div className="flex flex-col min-h-screen">
       <Header />
-      <MainContent>
+      <main className="flex-1 overflow-y-auto p-4 mt-16 mb-16">
         <h2>Add a New Recipe</h2>
         <RecipeForm onSubmit={handleSubmit} />
         {status && (
-          <StatusMessage $success={status.success}>
+          <div className={`my-5 mx-auto max-w-3xl p-3 rounded ${
+            status.success ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+          }`}>
             {status.message}
-          </StatusMessage>
+          </div>
         )}
-      </MainContent>
+      </main>
       <Navigation />
-    </PageContainer>
+    </div>
   );
 };
 

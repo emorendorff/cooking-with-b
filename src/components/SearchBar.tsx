@@ -1,45 +1,5 @@
 import { useState, useEffect } from 'react'
-import styled from 'styled-components'
 import { getAllTags } from '../lib/api'
-
-const Container = styled.div`
-  margin-bottom: 24px;
-`
-
-const SearchInput = styled.input`
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid #c6b7a8;
-  border-radius: 8px;
-  font-size: 16px;
-  margin-bottom: 12px;
-
-  &:focus {
-    outline: none;
-    border-color: #6a0d2b;
-  }
-`
-
-const TagsContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-`
-
-const TagChip = styled.button<{ $selected: boolean }>`
-  background-color: ${props => props.$selected ? '#6a0d2b' : '#c6b7a8'};
-  color: ${props => props.$selected ? 'white' : '#484848'};
-  border: none;
-  border-radius: 16px;
-  padding: 6px 12px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    background-color: ${props => props.$selected ? '#8a1d3b' : '#b5a699'};
-  }
-`
 
 interface SearchBarProps {
   onSearch: (query: string) => void
@@ -70,27 +30,32 @@ const SearchBar = ({ onSearch, onTagsChange, selectedTags }: SearchBarProps) => 
   }
 
   return (
-    <Container>
-      <SearchInput
+    <div className="mb-6">
+      <input
         type="text"
         placeholder="Search recipes..."
         value={query}
         onChange={handleQueryChange}
+        className="w-full px-4 py-3 border border-tan rounded-lg text-base mb-3 focus:outline-none focus:border-burgundy"
       />
       {availableTags.length > 0 && (
-        <TagsContainer>
+        <div className="flex flex-wrap gap-2">
           {availableTags.map(tag => (
-            <TagChip
+            <button
               key={tag}
-              $selected={selectedTags.includes(tag)}
               onClick={() => toggleTag(tag)}
+              className={`border-none rounded-2xl px-3 py-1.5 text-sm cursor-pointer transition-all ${
+                selectedTags.includes(tag)
+                  ? 'bg-burgundy text-white hover:bg-burgundy-hover'
+                  : 'bg-tan text-gray-700 hover:bg-tan-hover'
+              }`}
             >
               {tag}
-            </TagChip>
+            </button>
           ))}
-        </TagsContainer>
+        </div>
       )}
-    </Container>
+    </div>
   )
 }
 

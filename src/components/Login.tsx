@@ -1,64 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import styled from 'styled-components'
 import { useAuth } from '../context/AuthContext'
-
-const Container = styled.div`
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 24px;
-  background-color: #f4f1e1;
-  border-radius: 8px;
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-`
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`
-
-const Input = styled.input`
-  padding: 12px;
-  border: 1px solid #c6b7a8;
-  border-radius: 4px;
-  font-size: 16px;
-`
-
-const Button = styled.button`
-  background-color: #6a0d2b;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 12px 24px;
-  font-weight: 600;
-  font-size: 16px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #8a1d3b;
-  }
-
-  &:disabled {
-    background-color: #c6b7a8;
-    cursor: not-allowed;
-  }
-`
-
-const ToggleLink = styled.button`
-  background: none;
-  border: none;
-  color: #6a0d2b;
-  cursor: pointer;
-  text-decoration: underline;
-`
-
-const ErrorMessage = styled.div`
-  color: #dc3545;
-  padding: 8px;
-  background-color: #f8d7da;
-  border-radius: 4px;
-`
 
 const Login = () => {
   const navigate = useNavigate()
@@ -90,48 +32,63 @@ const Login = () => {
   }
 
   return (
-    <Container>
+    <div className="max-w-md mx-auto p-6 bg-cream rounded-lg shadow-lg">
       <h2>{isSignUp ? 'Sign Up' : 'Log In'}</h2>
 
-      {error && <ErrorMessage>{error}</ErrorMessage>}
+      {error && (
+        <div className="text-red-600 p-2 bg-red-100 rounded">
+          {error}
+        </div>
+      )}
 
-      <Form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {isSignUp && (
-          <Input
+          <input
             type="text"
             placeholder="Display Name"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             required
+            className="p-3 border border-tan rounded text-base"
           />
         )}
-        <Input
+        <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          className="p-3 border border-tan rounded text-base"
         />
-        <Input
+        <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
           minLength={6}
+          className="p-3 border border-tan rounded text-base"
         />
-        <Button type="submit" disabled={loading}>
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-burgundy text-white border-none rounded px-6 py-3 font-semibold text-base cursor-pointer hover:bg-burgundy-hover disabled:bg-tan disabled:cursor-not-allowed"
+        >
           {loading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Log In'}
-        </Button>
-      </Form>
+        </button>
+      </form>
 
-      <p style={{ marginTop: '16px', textAlign: 'center' }}>
+      <p className="mt-4 text-center text-gray-700">
         {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
-        <ToggleLink type="button" onClick={() => setIsSignUp(!isSignUp)}>
+        <button
+          type="button"
+          onClick={() => setIsSignUp(!isSignUp)}
+          className="bg-transparent border-none text-burgundy cursor-pointer underline"
+        >
           {isSignUp ? 'Log In' : 'Sign Up'}
-        </ToggleLink>
+        </button>
       </p>
-    </Container>
+    </div>
   )
 }
 

@@ -11,14 +11,6 @@ import Header from "../Header/Header";
 import Navigation from "../Navigation/Navigation";
 import RecipeForm from "../RecipeForm";
 import ImageUpload from "../components/ImageUpload";
-import {
-  LoadingMessage,
-  MainContent,
-  PageContainer,
-  Section,
-  SectionTitle,
-  StatusMessage
-} from "./styles";
 
 const EditRecipe = () => {
   const { id } = useParams<{ id: string }>();
@@ -42,43 +34,44 @@ const EditRecipe = () => {
 
   if (!isAdmin) {
     return (
-      <PageContainer>
+      <div className="flex flex-col min-h-screen">
         <Header />
-        <MainContent>
-          <StatusMessage $success={false}>
+        <main className="flex-1 overflow-y-auto p-4 mt-16 mb-16">
+          <div className="my-5 mx-auto max-w-3xl p-3 rounded bg-red-100 text-red-600">
             You must be an admin to edit recipes.
-          </StatusMessage>
-        </MainContent>
+          </div>
+        </main>
         <Navigation />
-      </PageContainer>
+      </div>
     );
   }
 
   if (loading) {
     return (
-      <PageContainer>
+      <div className="flex flex-col min-h-screen">
         <Header />
-        <MainContent>
-          <LoadingMessage>Loading recipe...</LoadingMessage>
-        </MainContent>
+        <main className="flex-1 overflow-y-auto p-4 mt-16 mb-16">
+          <div className="text-center py-12 text-gray-500">Loading recipe...</div>
+        </main>
         <Navigation />
-      </PageContainer>
+      </div>
     );
   }
 
   if (!recipe) {
     return (
-      <PageContainer>
+      <div className="flex flex-col min-h-screen">
         <Header />
-        <MainContent>
-          <StatusMessage $success={false}>Recipe not found</StatusMessage>
-        </MainContent>
+        <main className="flex-1 overflow-y-auto p-4 mt-16 mb-16">
+          <div className="my-5 mx-auto max-w-3xl p-3 rounded bg-red-100 text-red-600">
+            Recipe not found
+          </div>
+        </main>
         <Navigation />
-      </PageContainer>
+      </div>
     );
   }
 
-  // Convert recipe to form data format
   const initialFormData: RecipeFormData = {
     name: recipe.name,
     tagline: recipe.tagline || "",
@@ -118,7 +111,6 @@ const EditRecipe = () => {
     try {
       await updateRecipe(id, formData, ingredients);
       setStatus({ message: "Recipe updated successfully!", success: true });
-      // Refresh recipe data
       const updated = await getRecipe(id);
       setRecipe(updated);
     } catch (error) {
@@ -132,46 +124,47 @@ const EditRecipe = () => {
   };
 
   const handleImagesChange = async () => {
-    // Refresh recipe to get updated images
     if (!id) return;
     const updated = await getRecipe(id);
     setRecipe(updated);
   };
 
   return (
-    <PageContainer>
+    <div className="flex flex-col min-h-screen">
       <Header />
-      <MainContent>
-        <Section>
-          <SectionTitle>Edit Recipe: {recipe.name}</SectionTitle>
-        </Section>
+      <main className="flex-1 overflow-y-auto p-4 mt-16 mb-16">
+        <section className="max-w-3xl mx-auto mb-8">
+          <h2 className="font-display text-burgundy mb-4">Edit Recipe: {recipe.name}</h2>
+        </section>
 
         {status && (
-          <StatusMessage $success={status.success}>
+          <div className={`my-5 mx-auto max-w-3xl p-3 rounded ${
+            status.success ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+          }`}>
             {status.message}
-          </StatusMessage>
+          </div>
         )}
 
-        <Section>
-          <SectionTitle>Images</SectionTitle>
+        <section className="max-w-3xl mx-auto mb-8">
+          <h2 className="font-display text-burgundy mb-4">Images</h2>
           <ImageUpload
             recipeId={recipe.id}
             images={recipe.images || []}
             onImagesChange={handleImagesChange}
           />
-        </Section>
+        </section>
 
-        <Section>
-          <SectionTitle>Recipe Details</SectionTitle>
+        <section className="max-w-3xl mx-auto mb-8">
+          <h2 className="font-display text-burgundy mb-4">Recipe Details</h2>
           <RecipeForm
             onSubmit={handleSubmit}
             initialData={initialFormData}
             initialIngredients={initialIngredients}
           />
-        </Section>
-      </MainContent>
+        </section>
+      </main>
       <Navigation />
-    </PageContainer>
+    </div>
   );
 };
 

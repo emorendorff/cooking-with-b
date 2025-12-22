@@ -1,48 +1,23 @@
 import { Link } from "react-router-dom";
-import styled from "styled-components";
 import { Settings } from "../assets";
 import { useAuth } from "../context/AuthContext";
-
-const HeaderWrap = styled.header`
-  align-items: center;
-  background-color: #f4f1e1;
-  display: flex;
-  height: 64px;
-  justify-content: center;
-  left: 0;
-  position: fixed;
-  right: 0;
-  top: 0;
-  z-index: 1000;
-`;
-
-const SettingsLink = styled(Link)`
-  align-items: center;
-  color: #d18b4f;
-  display: flex;
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-`;
-
-const BSpan = styled.span`
-  color: #d18b4f;
-`;
 
 const Header = () => {
   const { user } = useAuth();
   return (
-    <HeaderWrap>
-      <Link to="/" style={{ textDecoration: "none" }}>
+    <header className="flex items-center justify-center bg-cream h-16 fixed left-0 right-0 top-0 z-[1000]">
+      <Link to="/" className="no-underline">
         <h1>
-          Chef Boyar-<BSpan>B</BSpan>
+          Chef Boyar-<span className="text-copper">B</span>
         </h1>
       </Link>
-      <SettingsLink to={user ? "/settings" : "/login"}>
+      <Link
+        to={user ? "/settings" : "/login"}
+        className="flex items-center text-copper absolute right-4 top-1/2 -translate-y-1/2"
+      >
         <Settings width={24} height={24} />
-      </SettingsLink>
-    </HeaderWrap>
+      </Link>
+    </header>
   );
 };
 
