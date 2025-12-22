@@ -19,12 +19,12 @@ const Stars = styled.div`
   font-size: 24px;
 `
 
-const StarButton = styled.button<{ filled: boolean }>`
+const StarButton = styled.button<{ $filled: boolean }>`
   background: none;
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: ${props => props.filled ? '#d18b4f' : '#c6b7a8'};
+  color: ${props => props.$filled ? '#d18b4f' : '#c6b7a8'};
 
   &:hover {
     color: #d18b4f;
@@ -106,7 +106,7 @@ interface RatingProps {
 }
 
 const Rating = ({ recipeId, reviews, averageRating, onReviewChange }: RatingProps) => {
-  const { user, profile } = useAuth()
+  const { user } = useAuth()
   const [rating, setRating] = useState(5)
   const [comment, setComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -163,7 +163,7 @@ const Rating = ({ recipeId, reviews, averageRating, onReviewChange }: RatingProp
               <StarButton
                 key={n}
                 type="button"
-                filled={n <= rating}
+                $filled={n <= rating}
                 onClick={() => setRating(n)}
               >
                 ★
