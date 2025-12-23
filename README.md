@@ -1,6 +1,6 @@
 # Chef Boyar-B
 
-A modern, mobile-first recipe app built for home cooks who want to organize their favorite recipes, plan meals, and simplify grocery shopping.
+I dated a vegan and kept a vegan kitchen for many years. When we broke up I was terrified my ex would go back to eating garbage after being intimidated by cooking. This app was a gift of sorts to log recipes I developed in our time together to make vegan cooking approachable, easy and repeatable. My first PWA, mobile-first recipe app built to organize, plan and cook some dope vegan food.
 
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)
@@ -8,10 +8,14 @@ A modern, mobile-first recipe app built for home cooks who want to organize thei
 ![Supabase](https://img.shields.io/badge/Supabase-Database-3FCF8E?logo=supabase)
 ![PWA](https://img.shields.io/badge/PWA-Installable-5A0FC8)
 
-<!-- Add your screenshots here -->
-<!-- ![Home Screen](screenshots/home.png) -->
-<!-- ![Recipe Detail](screenshots/recipe-detail.png) -->
-<!-- ![Grocery List](screenshots/grocery-list.png) -->
+## Home Page + Recipe
+<img width="1199" height="783" alt="Screenshot 2025-12-23 at 9 33 56 AM" src="https://github.com/user-attachments/assets/6135423e-e92a-4853-b8ca-150b8d5f2f20" />
+
+https://github.com/user-attachments/assets/f9714393-f690-4bb6-a2de-6daeacf45fb3
+
+## Recipe and Grocery List
+
+https://github.com/user-attachments/assets/58bee251-6504-4e49-883d-80ab2dbe8d33
 
 ## Features
 
@@ -46,7 +50,7 @@ A modern, mobile-first recipe app built for home cooks who want to organize thei
 
 ## Install as Mobile App (PWA)
 
-Chef Boyar-B is a Progressive Web App, meaning you can install it on your phone and use it like a native app—no app store required!
+Chef Boyar-B is a Progressive Web App (PWA), meaning you can install it on your phone and use it like a native app—no app store required!
 
 ### iOS (Safari)
 1. Open the app in Safari
@@ -173,4 +177,4 @@ This project is licensed under the MIT License.
 
 ---
 
-Made with love for home cooks everywhere.
+Made with love from a Pisces moon <3.
