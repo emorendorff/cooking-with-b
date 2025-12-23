@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   RecipeWithRelations,
   RecipeFormData,
@@ -14,6 +14,7 @@ import ImageUpload from "../components/ImageUpload";
 
 const EditRecipe = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { isAdmin } = useAuth();
   const [recipe, setRecipe] = useState<RecipeWithRelations | null>(null);
   const [loading, setLoading] = useState(true);
@@ -106,13 +107,12 @@ const EditRecipe = () => {
   const handleSubmit = async (
     formData: RecipeFormData,
     ingredients: IngredientFormData[]
-  ) => {
-    if (!id) return;
+  ): Promise<string> => {
+    if (!id) throw new Error("No recipe ID");
     try {
       await updateRecipe(id, formData, ingredients);
-      setStatus({ message: "Recipe updated successfully!", success: true });
-      const updated = await getRecipe(id);
-      setRecipe(updated);
+      navigate(`/recipes/${id}`);
+      return id;
     } catch (error) {
       setStatus({
         message: `Failed to update: ${
@@ -120,6 +120,7 @@ const EditRecipe = () => {
         }`,
         success: false
       });
+      throw error;
     }
   };
 
@@ -160,6 +161,7 @@ const EditRecipe = () => {
             onSubmit={handleSubmit}
             initialData={initialFormData}
             initialIngredients={initialIngredients}
+            mode="edit"
           />
         </section>
       </main>

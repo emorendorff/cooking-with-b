@@ -16,11 +16,11 @@ const AddRecipePage = () => {
   const handleSubmit = async (
     formData: RecipeFormData,
     ingredients: IngredientFormData[]
-  ) => {
+  ): Promise<void> => {
     try {
       await createRecipe(formData, ingredients);
       setStatus({
-        message: "Recipe submitted successfully!",
+        message: "Recipe submitted successfully! Form cleared for next recipe.",
         success: true
       });
     } catch (error) {
@@ -31,6 +31,7 @@ const AddRecipePage = () => {
         }`,
         success: false
       });
+      throw error; // Re-throw so RecipeForm knows it failed
     }
   };
 

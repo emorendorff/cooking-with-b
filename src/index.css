@@ -10,6 +10,7 @@
   --color-tan-light: #e0d6c8;
   --color-tan-lighter: #f0ebe3;
   --color-brown: #8b7355;
+  --color-olive: #636B2F;
 
   --font-display: "Montserrat", sans-serif;
   --font-secondary: "Open Sans", sans-serif;
@@ -54,24 +55,26 @@ body {
 }
 
 h1 {
-  font-size: 1.25rem;
-  color: #374151;
+  font-size: 1.5rem;
+  color: var(--color-burgundy);
   text-align: center;
-  font-weight: bold;
+  font-weight: 600;
+  letter-spacing: 0.025em;
 }
 
 h2 {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   color: var(--color-burgundy);
   text-transform: uppercase;
-  margin: 0.5rem 0;
+  margin: 0.75rem 0;
   text-align: center;
+  letter-spacing: 0.05em;
 }
 
 p {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-family: var(--font-secondary);
-  color: white;
+  color: #374151;
   margin: 0;
 }
 

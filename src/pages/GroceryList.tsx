@@ -12,7 +12,7 @@ const GroceryList = () => {
     toggleItem,
     removeItem,
     clearChecked,
-    clearAll,
+    clearAll
   } = useGroceryListContext();
 
   const handleAddItems = () => {
@@ -33,14 +33,14 @@ const GroceryList = () => {
     <div className="pt-16 pb-16 min-h-screen">
       <Header />
       <div className="max-w-xl mx-auto p-4">
-        <h1 className="mb-6 text-gray-700">Grocery List</h1>
+        <h1 className="mb-6">Grocery List</h1>
 
-        <div className="mb-8">
+        <div className="mb-8 bg-tan-lighter rounded-lg p-4 shadow-md">
           <textarea
             placeholder="Add items, one per line..."
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            className="w-full min-h-[100px] p-3 border border-tan rounded-lg text-base resize-y focus:outline-none focus:border-burgundy"
+            className="w-full min-h-25 p-3 border border-tan-light rounded-lg text-base resize-y focus:outline-none focus:border-burgundy bg-white"
           />
           <div className="flex gap-2 mt-2">
             <button
@@ -70,30 +70,30 @@ const GroceryList = () => {
         </div>
 
         {!hasItems && (
-          <p className="text-gray-400 text-center mt-8">
+          <p className=" text-center mt-8">
             Your grocery list is empty. Add items above or add ingredients from
             recipes.
           </p>
         )}
 
         {manualItems.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-base text-burgundy mb-3 pb-2 border-b border-tan text-left normal-case">
+          <div className="mb-6 bg-tan-light rounded-lg p-4 shadow-md">
+            <h2 className="text-left normal-case mb-3 pb-2 border-b border-tan-hover">
               My Items
             </h2>
             <ul className="list-none p-0 m-0">
               {manualItems.map((item) => (
                 <li
                   key={item.id}
-                  className={`flex items-center py-2 border-b border-gray-200 ${
-                    item.checked ? 'line-through text-gray-400' : 'text-gray-700'
+                  className={`flex items-center py-2 border-b border-tan-light last:border-b-0 ${
+                    item.checked ? "line-through text-brown" : "text-gray-700"
                   }`}
                 >
                   <input
                     type="checkbox"
                     checked={item.checked}
                     onChange={() => toggleItem(item.id, false)}
-                    className="mr-3 w-[18px] h-[18px] cursor-pointer"
+                    className="mr-3 w-4.5 h-4.5 cursor-pointer"
                   />
                   <span className="flex-1">{item.text}</span>
                   <button
@@ -109,23 +109,26 @@ const GroceryList = () => {
         )}
 
         {Object.entries(recipeItemsGrouped).map(([recipeId, group]) => (
-          <div key={recipeId} className="mb-6">
-            <h2 className="text-base text-burgundy mb-3 pb-2 border-b border-tan text-left normal-case">
+          <div
+            key={recipeId}
+            className="mb-6 bg-tan-light rounded-lg p-4 shadow-md"
+          >
+            <h2 className="text-left normal-case mb-3 pb-2 border-b border-tan-hover">
               From: {group.recipeName}
             </h2>
             <ul className="list-none p-0 m-0">
               {group.items.map((item) => (
                 <li
                   key={item.id}
-                  className={`flex items-center py-2 border-b border-gray-200 ${
-                    item.checked ? 'line-through text-gray-400' : 'text-gray-700'
+                  className={`flex items-center py-2 border-b border-tan-light last:border-b-0 ${
+                    item.checked ? "line-through text-brown" : "text-gray-700"
                   }`}
                 >
                   <input
                     type="checkbox"
                     checked={item.checked}
                     onChange={() => toggleItem(item.id, true)}
-                    className="mr-3 w-[18px] h-[18px] cursor-pointer"
+                    className="mr-3 w-4.5 h-4.5 cursor-pointer"
                   />
                   <span className="flex-1">{item.text}</span>
                   <button

@@ -81,7 +81,7 @@ const Rating = ({ recipeId, reviews, averageRating, onReviewChange }: RatingProp
             placeholder="Leave a comment (optional)"
             value={comment}
             onChange={e => setComment(e.target.value)}
-            className="p-3 border border-tan rounded min-h-[80px] resize-y"
+            className="p-3 border border-tan rounded min-h-20 resize-y"
           />
           <button
             type="submit"

@@ -35,13 +35,17 @@ const DailyPick = () => {
   }, []);
 
   if (loading)
-    return <div className="flex flex-col rounded-lg p-4 mb-8 bg-tan shadow-lg">Loading today's pick...</div>;
+    return (
+      <div className="flex flex-col rounded-lg p-4 mb-8 bg-tan shadow-lg">
+        Loading today's pick...
+      </div>
+    );
   if (!recipe) return null;
   const primaryImage = recipe?.images?.find((img) => img.role === "primary");
 
   return (
     <Link to={`/recipes/${recipe.id}`} className="no-underline text-inherit">
-      <div className="flex flex-col rounded-lg p-4 mb-8 bg-tan shadow-lg cursor-pointer transition-transform hover:-translate-y-1">
+      <div className="flex flex-col rounded-lg p-4 mb-8 bg-tan-light shadow-lg cursor-pointer transition-transform hover:-translate-y-1">
         <div className="flex h-[250px] overflow-hidden bg-tan-light rounded">
           {primaryImage ? (
             <img

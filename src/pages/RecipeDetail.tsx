@@ -11,7 +11,8 @@ import Rating from "../components/Rating";
 const RecipeDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { isAdmin } = useAuth();
-  const { addRecipeIngredient, addAllRecipeIngredients } = useGroceryListContext();
+  const { addRecipeIngredient, addAllRecipeIngredients } =
+    useGroceryListContext();
   const [recipe, setRecipe] = useState<RecipeWithRelations | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -64,7 +65,9 @@ const RecipeDetail = () => {
       <div className="flex flex-col min-h-screen">
         <Header />
         <main className="flex-1 overflow-y-auto p-4 mt-16 mb-16 max-w-3xl mx-auto">
-          <div className="text-center py-12 text-gray-500">Loading recipe...</div>
+          <div className="text-center py-12 text-gray-500">
+            Loading recipe...
+          </div>
         </main>
         <Navigation />
       </div>
@@ -76,7 +79,9 @@ const RecipeDetail = () => {
       <div className="flex flex-col min-h-screen">
         <Header />
         <main className="flex-1 overflow-y-auto p-4 mt-16 mb-16 max-w-3xl mx-auto">
-          <div className="text-center py-12 text-red-600">{error || "Recipe not found"}</div>
+          <div className="text-center py-12 text-red-600">
+            {error || "Recipe not found"}
+          </div>
         </main>
         <Navigation />
       </div>
@@ -102,28 +107,49 @@ const RecipeDetail = () => {
           <img
             src={primaryImage.url}
             alt={recipe.name}
-            className="w-full h-[300px] object-cover rounded-lg mb-4"
+            className="w-full h-75 object-cover rounded-lg mb-4"
           />
         ) : (
-          <div className="w-full h-[300px] bg-tan-light rounded-lg flex items-center justify-center text-6xl text-brown mb-4">
+          <div className="w-full h-75 bg-gray-300 rounded-lg flex items-center justify-center text-6xl text-brown mb-4">
             🍽️
           </div>
         )}
 
         <h1 className="font-display text-gray-700 mb-2">{recipe.name}</h1>
-        {recipe.tagline && <p className="italic text-gray-500 mb-4">{recipe.tagline}</p>}
+        {recipe.tagline && (
+          <p className="italic text-gray-500">{recipe.tagline}</p>
+        )}
 
-        <div className="flex gap-4 flex-wrap mb-6 text-gray-500 text-sm">
-          {recipe.servings && <span className="bg-cream px-3 py-1 rounded-2xl">Serves: {recipe.servings}</span>}
-          {recipe.prep_time && <span className="bg-cream px-3 py-1 rounded-2xl">Prep: {recipe.prep_time}</span>}
-          {recipe.cook_time && <span className="bg-cream px-3 py-1 rounded-2xl">Cook: {recipe.cook_time}</span>}
-          {recipe.difficulty && <span className="bg-cream px-3 py-1 rounded-2xl">{recipe.difficulty}</span>}
+        <div className="flex gap-4 flex-wrap mt-4 mb-6 text-cream text-sm">
+          {recipe.servings && (
+            <span className="bg-olive px-3 py-1 rounded-2xl">
+              Serves: {recipe.servings}
+            </span>
+          )}
+          {recipe.prep_time && (
+            <span className="bg-olive px-3 py-1 rounded-2xl">
+              Prep: {recipe.prep_time}
+            </span>
+          )}
+          {recipe.cook_time && (
+            <span className="bg-olive px-3 py-1 rounded-2xl">
+              Cook: {recipe.cook_time}
+            </span>
+          )}
+          {recipe.difficulty && (
+            <span className="bg-olive px-3 py-1 rounded-2xl">
+              {recipe.difficulty}
+            </span>
+          )}
         </div>
 
         {recipe.tags && recipe.tags.length > 0 && (
           <div className="flex gap-2 flex-wrap mb-6">
             {recipe.tags.map((tag) => (
-              <span key={tag} className="bg-tan text-gray-700 px-3 py-1 rounded-2xl text-sm">
+              <span
+                key={tag}
+                className="bg-tan text-gray-700 px-3 py-1 rounded-2xl text-sm"
+              >
                 {tag}
               </span>
             ))}
@@ -144,7 +170,10 @@ const RecipeDetail = () => {
           )}
           <ul className="list-none p-0">
             {recipe.ingredients?.map((ing, idx) => (
-              <li key={idx} className="py-2 border-b border-tan-light last:border-b-0">
+              <li
+                key={idx}
+                className="py-2 border-b border-tan-light last:border-b-0"
+              >
                 {ing.amount && `${ing.amount} `}
                 {ing.unit && `${ing.unit} `}
                 {ing.linked_recipe_id ? (
@@ -161,8 +190,10 @@ const RecipeDetail = () => {
                   onClick={() => handleAddIngredient(ing)}
                   title="Add to grocery list"
                   className={`${
-                    addedItems.has(ing.id) ? 'bg-green-500 hover:bg-green-500' : 'bg-burgundy hover:bg-burgundy-hover'
-                  } text-white border-none rounded-full w-6 h-6 text-base cursor-pointer ml-2 inline-flex items-center justify-center flex-shrink-0`}
+                    addedItems.has(ing.id)
+                      ? "bg-green-500 hover:bg-green-500"
+                      : "bg-burgundy hover:bg-burgundy-hover"
+                  } text-white border-none rounded-full w-6 h-6 text-base cursor-pointer ml-2 inline-flex items-center justify-center shrink-0`}
                 >
                   {addedItems.has(ing.id) ? "✓" : "+"}
                 </button>
@@ -177,7 +208,9 @@ const RecipeDetail = () => {
           </h2>
           <ol className="pl-6">
             {recipe.instructions?.map((inst, idx) => (
-              <li key={idx} className="py-3 leading-relaxed">{inst.text}</li>
+              <li key={idx} className="py-3 leading-relaxed text-gray-700">
+                {inst.text}
+              </li>
             ))}
           </ol>
         </section>

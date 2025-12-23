@@ -86,7 +86,7 @@ const ImageUpload = ({ recipeId, images, onImagesChange }: ImageUploadProps) => 
               key={image.id}
               className={`relative rounded-lg overflow-hidden border-[3px] ${getBorderColor(image.role)}`}
             >
-              <img src={image.url} alt="" className="w-full h-[120px] object-cover" />
+              <img src={image.url} alt="" className="w-full h-30 object-cover" />
               {image.role && (
                 <span className="absolute top-1 left-1 bg-black/70 text-white px-1.5 py-0.5 rounded text-[10px] uppercase">
                   {image.role}

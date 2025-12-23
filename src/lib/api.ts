@@ -39,6 +39,29 @@ export async function getRecipes(): Promise<RecipeWithRelations[]> {
   }
 }
 
+export async function getAllRecipes(): Promise<RecipeWithRelations[]> {
+  try {
+    const url = import.meta.env.VITE_SUPABASE_URL
+    const key = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+    const response = await fetch(
+      `${url}/rest/v1/recipes?select=*,images(*)&order=created_at.desc`,
+      {
+        headers: {
+          'apikey': key,
+          'Authorization': `Bearer ${key}`,
+        }
+      }
+    )
+    const data = await response.json()
+
+    return data as RecipeWithRelations[]
+  } catch (err) {
+    console.error('API: Direct fetch error', err)
+    throw err
+  }
+}
+
 export async function getRecipe(id: string): Promise<RecipeWithRelations> {
   const url = import.meta.env.VITE_SUPABASE_URL
   const key = import.meta.env.VITE_SUPABASE_ANON_KEY
