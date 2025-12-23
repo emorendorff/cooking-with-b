@@ -1,107 +1,6 @@
 import { useState } from 'react'
-import styled from 'styled-components'
 import { RecipeImage } from '../types'
 import { uploadRecipeImage, updateImageRole, deleteImage } from '../lib/api'
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`
-
-const UploadButton = styled.label`
-  background-color: #c6b7a8;
-  color: #484848;
-  border: none;
-  border-radius: 4px;
-  padding: 12px 24px;
-  font-weight: 600;
-  cursor: pointer;
-  text-align: center;
-
-  &:hover {
-    background-color: #b5a699;
-  }
-
-  input {
-    display: none;
-  }
-`
-
-const ImageGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 12px;
-`
-
-const ImageCard = styled.div<{ $role: string | null }>`
-  position: relative;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 3px solid ${props =>
-    props.$role === 'primary' ? '#6a0d2b' :
-    props.$role === 'secondary' ? '#d18b4f' :
-    'transparent'
-  };
-`
-
-const Thumbnail = styled.img`
-  width: 100%;
-  height: 120px;
-  object-fit: cover;
-`
-
-const ImageActions = styled.div`
-  display: flex;
-  gap: 4px;
-  padding: 8px;
-  background-color: #f4f1e1;
-`
-
-const ActionButton = styled.button<{ $active?: boolean }>`
-  flex: 1;
-  padding: 4px;
-  font-size: 11px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  background-color: ${props => props.$active ? '#6a0d2b' : '#c6b7a8'};
-  color: ${props => props.$active ? 'white' : '#484848'};
-
-  &:hover {
-    opacity: 0.8;
-  }
-`
-
-const DeleteButton = styled.button`
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  background-color: rgba(220, 53, 69, 0.9);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-  font-size: 14px;
-
-  &:hover {
-    background-color: #dc3545;
-  }
-`
-
-const RoleBadge = styled.span`
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 10px;
-  text-transform: uppercase;
-`
 
 interface ImageUploadProps {
   recipeId: string
@@ -135,12 +34,10 @@ const ImageUpload = ({ recipeId, images, onImagesChange }: ImageUploadProps) => 
   const handleRoleChange = async (imageId: string, newRole: 'primary' | 'secondary' | null) => {
     try {
       await updateImageRole(imageId, newRole)
-      // Update local state
       onImagesChange(images.map(img => {
         if (img.id === imageId) {
           return { ...img, role: newRole }
         }
-        // Clear primary from other images if setting new primary
         if (newRole === 'primary' && img.role === 'primary') {
           return { ...img, role: null }
         }
@@ -162,9 +59,15 @@ const ImageUpload = ({ recipeId, images, onImagesChange }: ImageUploadProps) => 
     }
   }
 
+  const getBorderColor = (role: string | null) => {
+    if (role === 'primary') return 'border-burgundy'
+    if (role === 'secondary') return 'border-copper'
+    return 'border-transparent'
+  }
+
   return (
-    <Container>
-      <UploadButton>
+    <div className="flex flex-col gap-4">
+      <label className="bg-tan text-gray-700 border-none rounded px-6 py-3 font-semibold cursor-pointer text-center hover:bg-tan-hover">
         {uploading ? 'Uploading...' : 'Add Images'}
         <input
           type="file"
@@ -172,41 +75,52 @@ const ImageUpload = ({ recipeId, images, onImagesChange }: ImageUploadProps) => 
           multiple
           onChange={handleFileSelect}
           disabled={uploading}
+          className="hidden"
         />
-      </UploadButton>
+      </label>
 
       {images.length > 0 && (
-        <ImageGrid>
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3">
           {images.map(image => (
-            <ImageCard key={image.id} $role={image.role}>
-              <Thumbnail src={image.url} alt="" />
-              {image.role && <RoleBadge>{image.role}</RoleBadge>}
-              <DeleteButton onClick={() => handleDelete(image)}>x</DeleteButton>
-              <ImageActions>
-                <ActionButton
-                  $active={image.role === 'primary'}
-                  onClick={() => handleRoleChange(
-                    image.id,
-                    image.role === 'primary' ? null : 'primary'
-                  )}
+            <div
+              key={image.id}
+              className={`relative rounded-lg overflow-hidden border-[3px] ${getBorderColor(image.role)}`}
+            >
+              <img src={image.url} alt="" className="w-full h-30 object-cover" />
+              {image.role && (
+                <span className="absolute top-1 left-1 bg-black/70 text-white px-1.5 py-0.5 rounded text-[10px] uppercase">
+                  {image.role}
+                </span>
+              )}
+              <button
+                onClick={() => handleDelete(image)}
+                className="absolute top-1 right-1 bg-red-500/90 text-white border-none rounded-full w-6 h-6 cursor-pointer text-sm hover:bg-red-600"
+              >
+                x
+              </button>
+              <div className="flex gap-1 p-2 bg-cream">
+                <button
+                  onClick={() => handleRoleChange(image.id, image.role === 'primary' ? null : 'primary')}
+                  className={`flex-1 p-1 text-[11px] border-none rounded cursor-pointer hover:opacity-80 ${
+                    image.role === 'primary' ? 'bg-burgundy text-white' : 'bg-tan text-gray-700'
+                  }`}
                 >
                   Primary
-                </ActionButton>
-                <ActionButton
-                  $active={image.role === 'secondary'}
-                  onClick={() => handleRoleChange(
-                    image.id,
-                    image.role === 'secondary' ? null : 'secondary'
-                  )}
+                </button>
+                <button
+                  onClick={() => handleRoleChange(image.id, image.role === 'secondary' ? null : 'secondary')}
+                  className={`flex-1 p-1 text-[11px] border-none rounded cursor-pointer hover:opacity-80 ${
+                    image.role === 'secondary' ? 'bg-burgundy text-white' : 'bg-tan text-gray-700'
+                  }`}
                 >
                   Secondary
-                </ActionButton>
-              </ImageActions>
-            </ImageCard>
+                </button>
+              </div>
+            </div>
           ))}
-        </ImageGrid>
+        </div>
       )}
-    </Container>
+    </div>
   )
 }
 

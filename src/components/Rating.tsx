@@ -1,102 +1,7 @@
 import { useState } from 'react'
-import styled from 'styled-components'
 import { Review } from '../types'
 import { createReview, deleteReview } from '../lib/api'
 import { useAuth } from '../context/AuthContext'
-
-const Container = styled.div`
-  margin-top: 24px;
-`
-
-const AverageRating = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-`
-
-const Stars = styled.div`
-  font-size: 24px;
-`
-
-const StarButton = styled.button<{ $filled: boolean }>`
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: ${props => props.$filled ? '#d18b4f' : '#c6b7a8'};
-
-  &:hover {
-    color: #d18b4f;
-  }
-`
-
-const ReviewForm = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
-  padding: 16px;
-  background-color: #f4f1e1;
-  border-radius: 8px;
-`
-
-const TextArea = styled.textarea`
-  padding: 12px;
-  border: 1px solid #c6b7a8;
-  border-radius: 4px;
-  min-height: 80px;
-  resize: vertical;
-`
-
-const Button = styled.button`
-  background-color: #6a0d2b;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 16px;
-  cursor: pointer;
-  align-self: flex-start;
-
-  &:hover {
-    background-color: #8a1d3b;
-  }
-`
-
-const ReviewList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`
-
-const ReviewCard = styled.div`
-  padding: 16px;
-  background-color: #f4f1e1;
-  border-radius: 8px;
-`
-
-const ReviewHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-`
-
-const ReviewAuthor = styled.span`
-  font-weight: 600;
-`
-
-const DeleteButton = styled.button`
-  background: none;
-  border: none;
-  color: #dc3545;
-  cursor: pointer;
-  font-size: 12px;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`
 
 interface RatingProps {
   recipeId: string
@@ -145,69 +50,79 @@ const Rating = ({ recipeId, reviews, averageRating, onReviewChange }: RatingProp
   }
 
   return (
-    <Container>
+    <div className="mt-6">
       <h3>Reviews</h3>
 
       {averageRating !== undefined && (
-        <AverageRating>
-          <Stars>{renderStars(averageRating)}</Stars>
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-2xl">{renderStars(averageRating)}</span>
           <span>{averageRating.toFixed(1)} ({reviews.length} reviews)</span>
-        </AverageRating>
+        </div>
       )}
 
       {user && !userReview && (
-        <ReviewForm onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3 mb-6 p-4 bg-cream rounded-lg">
           <div>
             <span>Your rating: </span>
             {[1, 2, 3, 4, 5].map(n => (
-              <StarButton
+              <button
                 key={n}
                 type="button"
-                $filled={n <= rating}
                 onClick={() => setRating(n)}
+                className={`bg-transparent border-none text-2xl cursor-pointer hover:text-copper ${
+                  n <= rating ? 'text-copper' : 'text-tan'
+                }`}
               >
                 ★
-              </StarButton>
+              </button>
             ))}
           </div>
-          <TextArea
+          <textarea
             placeholder="Leave a comment (optional)"
             value={comment}
             onChange={e => setComment(e.target.value)}
+            className="p-3 border border-tan rounded min-h-20 resize-y"
           />
-          <Button type="submit" disabled={submitting}>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="bg-burgundy text-white border-none rounded px-4 py-2 cursor-pointer self-start hover:bg-burgundy-hover"
+          >
             {submitting ? 'Submitting...' : 'Submit Review'}
-          </Button>
-        </ReviewForm>
+          </button>
+        </form>
       )}
 
       {!user && (
-        <p style={{ fontStyle: 'italic', color: '#666' }}>
+        <p className="italic text-gray-500">
           Log in to leave a review
         </p>
       )}
 
-      <ReviewList>
+      <div className="flex flex-col gap-4">
         {reviews.map(review => (
-          <ReviewCard key={review.id}>
-            <ReviewHeader>
+          <div key={review.id} className="p-4 bg-cream rounded-lg">
+            <div className="flex justify-between items-center mb-2">
               <div>
-                <ReviewAuthor>{review.profile?.display_name || 'Anonymous'}</ReviewAuthor>
-                <span style={{ marginLeft: '8px', color: '#d18b4f' }}>
+                <span className="font-semibold">{review.profile?.display_name || 'Anonymous'}</span>
+                <span className="ml-2 text-copper">
                   {renderStars(review.rating)}
                 </span>
               </div>
               {review.user_id === user?.id && (
-                <DeleteButton onClick={() => handleDelete(review.id)}>
+                <button
+                  onClick={() => handleDelete(review.id)}
+                  className="bg-transparent border-none text-red-600 cursor-pointer text-xs hover:underline"
+                >
                   Delete
-                </DeleteButton>
+                </button>
               )}
-            </ReviewHeader>
-            {review.comment && <p>{review.comment}</p>}
-          </ReviewCard>
+            </div>
+            {review.comment && <p className="text-gray-700">{review.comment}</p>}
+          </div>
         ))}
-      </ReviewList>
-    </Container>
+      </div>
+    </div>
   )
 }
 

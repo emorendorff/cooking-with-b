@@ -1,127 +1,12 @@
 import { useState, useEffect } from 'react'
-import styled from 'styled-components'
 import { RecipeFormData, IngredientFormData, Instruction, Recipe } from './types'
 import { getRecipes } from './lib/api'
 
-const FormContainer = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 24px;
-  background-color: #f4f1e1;
-  border-radius: 8px;
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-`
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`
-
-const FormGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`
-
-const Label = styled.label`
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 14px;
-  color: #484848;
-`
-
-const Input = styled.input`
-  padding: 8px 12px;
-  border: 1px solid #c6b7a8;
-  border-radius: 4px;
-  font-family: var(--font-secondary);
-  font-size: 14px;
-`
-
-const Select = styled.select`
-  padding: 8px 12px;
-  border: 1px solid #c6b7a8;
-  border-radius: 4px;
-  font-family: var(--font-secondary);
-  font-size: 14px;
-`
-
-const TextArea = styled.textarea`
-  padding: 8px 12px;
-  border: 1px solid #c6b7a8;
-  border-radius: 8px;
-  font-family: var(--font-secondary);
-  font-size: 14px;
-  min-height: 50px;
-`
-
-const Button = styled.button`
-  background-color: #6a0d2b;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 12px 24px;
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #8a1d3b;
-  }
-`
-
-const DynamicFieldsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`
-
-const DynamicField = styled.div`
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-`
-
-const RemoveButton = styled.button`
-  background-color: #d18b4f;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 12px;
-  cursor: pointer;
-`
-
-const AddButton = styled.button`
-  background-color: #c6b7a8;
-  color: #484848;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 12px;
-  font-size: 14px;
-  margin-top: 8px;
-  cursor: pointer;
-  align-self: flex-start;
-`
-
-const ToggleButton = styled.button<{ $active: boolean }>`
-  background-color: ${props => props.$active ? '#6a0d2b' : '#c6b7a8'};
-  color: ${props => props.$active ? 'white' : '#484848'};
-  border: none;
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 12px;
-  cursor: pointer;
-`
-
 interface RecipeFormProps {
-  onSubmit: (recipe: RecipeFormData, ingredients: IngredientFormData[]) => void
+  onSubmit: (recipe: RecipeFormData, ingredients: IngredientFormData[]) => Promise<string | void>
   initialData?: RecipeFormData
   initialIngredients?: IngredientFormData[]
+  mode?: 'add' | 'edit'
 }
 
 const emptyIngredient: IngredientFormData = {
@@ -147,12 +32,14 @@ const initialFormData: RecipeFormData = {
   tags: [''],
 }
 
-const RecipeForm = ({ onSubmit, initialData, initialIngredients }: RecipeFormProps) => {
+const RecipeForm = ({ onSubmit, initialData, initialIngredients, mode = 'add' }: RecipeFormProps) => {
   const [formData, setFormData] = useState<RecipeFormData>(initialData || initialFormData)
   const [ingredients, setIngredients] = useState<IngredientFormData[]>(
     initialIngredients || [emptyIngredient]
   )
   const [availableRecipes, setAvailableRecipes] = useState<Recipe[]>([])
+  const [isDirty, setIsDirty] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     getRecipes().then(setAvailableRecipes).catch(console.error)
@@ -163,13 +50,14 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients }: RecipeFormPro
   ) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+    setIsDirty(true)
   }
 
-  // Ingredient handlers
   const handleIngredientChange = (index: number, field: keyof IngredientFormData, value: string | boolean) => {
     setIngredients(prev => prev.map((ing, i) =>
       i === index ? { ...ing, [field]: value } : ing
     ))
+    setIsDirty(true)
   }
 
   const toggleIngredientType = (index: number) => {
@@ -182,19 +70,21 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients }: RecipeFormPro
         linked_recipe_id: null,
       } : ing
     ))
+    setIsDirty(true)
   }
 
   const addIngredient = () => {
     setIngredients(prev => [...prev, emptyIngredient])
+    setIsDirty(true)
   }
 
   const removeIngredient = (index: number) => {
     if (ingredients.length > 1) {
       setIngredients(prev => prev.filter((_, i) => i !== index))
+      setIsDirty(true)
     }
   }
 
-  // Instruction handlers
   const handleInstructionChange = (index: number, text: string) => {
     setFormData(prev => ({
       ...prev,
@@ -202,6 +92,7 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients }: RecipeFormPro
         i === index ? { ...inst, text } : inst
       ),
     }))
+    setIsDirty(true)
   }
 
   const addInstruction = () => {
@@ -212,6 +103,7 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients }: RecipeFormPro
         { step: prev.instructions.length + 1, text: '' },
       ],
     }))
+    setIsDirty(true)
   }
 
   const removeInstruction = (index: number) => {
@@ -222,19 +114,21 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients }: RecipeFormPro
           .filter((_, i) => i !== index)
           .map((inst, i) => ({ ...inst, step: i + 1 })),
       }))
+      setIsDirty(true)
     }
   }
 
-  // Tag handlers
   const handleTagChange = (index: number, value: string) => {
     setFormData(prev => ({
       ...prev,
       tags: prev.tags.map((tag, i) => (i === index ? value : tag)),
     }))
+    setIsDirty(true)
   }
 
   const addTag = () => {
     setFormData(prev => ({ ...prev, tags: [...prev.tags, ''] }))
+    setIsDirty(true)
   }
 
   const removeTag = (index: number) => {
@@ -243,19 +137,21 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients }: RecipeFormPro
         ...prev,
         tags: prev.tags.filter((_, i) => i !== index),
       }))
+      setIsDirty(true)
     }
   }
 
-  // Equipment handlers
   const handleEquipmentChange = (index: number, value: string) => {
     setFormData(prev => ({
       ...prev,
       equipment: prev.equipment.map((item, i) => (i === index ? value : item)),
     }))
+    setIsDirty(true)
   }
 
   const addEquipment = () => {
     setFormData(prev => ({ ...prev, equipment: [...prev.equipment, ''] }))
+    setIsDirty(true)
   }
 
   const removeEquipment = (index: number) => {
@@ -264,116 +160,159 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients }: RecipeFormPro
         ...prev,
         equipment: prev.equipment.filter((_, i) => i !== index),
       }))
+      setIsDirty(true)
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit(formData, ingredients)
+  const resetForm = () => {
+    setFormData(initialFormData)
+    setIngredients([emptyIngredient])
+    setIsDirty(false)
   }
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    try {
+      await onSubmit(formData, ingredients)
+      if (mode === 'add') {
+        resetForm()
+      } else {
+        setIsDirty(false)
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const isSubmitDisabled = isSubmitting || (mode === 'edit' && !isDirty)
+
+  const inputClass = "px-3 py-2 border border-tan rounded font-secondary text-sm"
+  const selectClass = "px-3 py-2 border border-tan rounded font-secondary text-sm"
+  const textareaClass = "px-3 py-2 border border-tan rounded-lg font-secondary text-sm min-h-[50px]"
+
   return (
-    <FormContainer>
-      <Form onSubmit={handleSubmit}>
-        <FormGroup>
-          <Label htmlFor="name">Recipe Name</Label>
-          <Input
+    <div className="max-w-3xl mx-auto p-6 bg-cream rounded-lg shadow-lg">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <label htmlFor="name" className="font-display font-semibold text-sm text-gray-700">
+            Recipe Name
+          </label>
+          <input
             type="text"
             id="name"
             name="name"
             value={formData.name}
             onChange={handleChange}
             required
+            className={inputClass}
           />
-        </FormGroup>
+        </div>
 
-        <FormGroup>
-          <Label htmlFor="tagline">Tagline</Label>
-          <Input
+        <div className="flex flex-col gap-2">
+          <label htmlFor="tagline" className="font-display font-semibold text-sm text-gray-700">
+            Tagline
+          </label>
+          <input
             type="text"
             id="tagline"
             name="tagline"
             value={formData.tagline}
             onChange={handleChange}
+            className={inputClass}
           />
-        </FormGroup>
+        </div>
 
-        <FormGroup>
-          <Label htmlFor="servings">Servings</Label>
-          <Input
+        <div className="flex flex-col gap-2">
+          <label htmlFor="servings" className="font-display font-semibold text-sm text-gray-700">
+            Servings
+          </label>
+          <input
             type="text"
             id="servings"
             name="servings"
             placeholder="e.g., 4 or 2-3"
             value={formData.servings}
             onChange={handleChange}
+            className={inputClass}
           />
-        </FormGroup>
+        </div>
 
-        <FormGroup>
-          <Label htmlFor="prep_time">Prep Time</Label>
-          <Input
+        <div className="flex flex-col gap-2">
+          <label htmlFor="prep_time" className="font-display font-semibold text-sm text-gray-700">
+            Prep Time
+          </label>
+          <input
             type="text"
             id="prep_time"
             name="prep_time"
             placeholder="e.g., 20 minutes, overnight"
             value={formData.prep_time}
             onChange={handleChange}
+            className={inputClass}
           />
-        </FormGroup>
+        </div>
 
-        <FormGroup>
-          <Label htmlFor="cook_time">Cook Time</Label>
-          <Input
+        <div className="flex flex-col gap-2">
+          <label htmlFor="cook_time" className="font-display font-semibold text-sm text-gray-700">
+            Cook Time
+          </label>
+          <input
             type="text"
             id="cook_time"
             name="cook_time"
             placeholder="e.g., 30 minutes"
             value={formData.cook_time}
             onChange={handleChange}
+            className={inputClass}
           />
-        </FormGroup>
+        </div>
 
-        <FormGroup>
-          <Label htmlFor="difficulty">Difficulty</Label>
-          <Select
+        <div className="flex flex-col gap-2">
+          <label htmlFor="difficulty" className="font-display font-semibold text-sm text-gray-700">
+            Difficulty
+          </label>
+          <select
             id="difficulty"
             name="difficulty"
             value={formData.difficulty}
             onChange={handleChange}
+            className={selectClass}
           >
             <option value="easy">Easy</option>
             <option value="medium">Medium</option>
             <option value="hard">Hard</option>
-          </Select>
-        </FormGroup>
+          </select>
+        </div>
 
-        <FormGroup>
-          <Label>Ingredients</Label>
-          <DynamicFieldsContainer>
+        <div className="flex flex-col gap-2">
+          <label className="font-display font-semibold text-sm text-gray-700">Ingredients</label>
+          <div className="flex flex-col gap-3">
             {ingredients.map((ingredient, index) => (
-              <DynamicField key={index}>
-                <ToggleButton
+              <div key={index} className="flex gap-2 items-center flex-wrap">
+                <button
                   type="button"
-                  $active={ingredient.isLinkedRecipe}
                   onClick={() => toggleIngredientType(index)}
+                  className={`border-none rounded px-2 py-1 text-xs cursor-pointer ${
+                    ingredient.isLinkedRecipe ? 'bg-burgundy text-white' : 'bg-tan text-gray-700'
+                  }`}
                 >
                   {ingredient.isLinkedRecipe ? 'Recipe Link' : 'Ingredient'}
-                </ToggleButton>
+                </button>
 
                 {ingredient.isLinkedRecipe ? (
                   <>
-                    <Input
+                    <input
                       type="text"
                       placeholder="Amount (e.g., 1 batch)"
                       value={ingredient.amount}
                       onChange={(e) => handleIngredientChange(index, 'amount', e.target.value)}
-                      style={{ width: '120px' }}
+                      className={`${inputClass} w-30`}
                     />
-                    <Select
+                    <select
                       value={ingredient.linked_recipe_id || ''}
                       onChange={(e) => handleIngredientChange(index, 'linked_recipe_id', e.target.value)}
-                      style={{ flex: 1 }}
+                      className={`${selectClass} flex-1`}
                     >
                       <option value="">Select a recipe...</option>
                       {availableRecipes.map((recipe) => (
@@ -381,137 +320,161 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients }: RecipeFormPro
                           {recipe.name}
                         </option>
                       ))}
-                    </Select>
+                    </select>
                   </>
                 ) : (
                   <>
-                    <Input
+                    <input
                       type="text"
                       placeholder="Item"
                       value={ingredient.item}
                       onChange={(e) => handleIngredientChange(index, 'item', e.target.value)}
-                      style={{ flex: 2 }}
+                      className={`${inputClass} flex-2`}
                       required={!ingredient.isLinkedRecipe}
                     />
-                    <Input
+                    <input
                       type="text"
                       placeholder="Amount"
                       value={ingredient.amount}
                       onChange={(e) => handleIngredientChange(index, 'amount', e.target.value)}
-                      style={{ width: '80px' }}
+                      className={`${inputClass} w-20`}
                     />
-                    <Input
+                    <input
                       type="text"
                       placeholder="Unit"
                       value={ingredient.unit}
                       onChange={(e) => handleIngredientChange(index, 'unit', e.target.value)}
-                      style={{ width: '80px' }}
+                      className={`${inputClass} w-20`}
                     />
                   </>
                 )}
 
-                <RemoveButton
+                <button
                   type="button"
                   onClick={() => removeIngredient(index)}
                   disabled={ingredients.length === 1}
+                  className="bg-copper text-white border-none rounded px-2 py-1 text-xs cursor-pointer disabled:opacity-50"
                 >
                   Remove
-                </RemoveButton>
-              </DynamicField>
+                </button>
+              </div>
             ))}
-          </DynamicFieldsContainer>
-          <AddButton type="button" onClick={addIngredient}>
+          </div>
+          <button
+            type="button"
+            onClick={addIngredient}
+            className="bg-tan text-gray-700 border-none rounded px-3 py-2 text-sm mt-2 cursor-pointer self-start"
+          >
             Add Ingredient
-          </AddButton>
-        </FormGroup>
+          </button>
+        </div>
 
-        <FormGroup>
-          <Label>Instructions</Label>
-          <DynamicFieldsContainer>
+        <div className="flex flex-col gap-2">
+          <label className="font-display font-semibold text-sm text-gray-700">Instructions</label>
+          <div className="flex flex-col gap-3">
             {formData.instructions.map((instruction, index) => (
-              <DynamicField key={index}>
-                <span style={{ minWidth: '30px', textAlign: 'center' }}>
-                  {instruction.step}.
-                </span>
-                <TextArea
+              <div key={index} className="flex gap-2 items-center flex-wrap">
+                <span className="min-w-7.5 text-center">{instruction.step}.</span>
+                <textarea
                   placeholder="Instruction step"
                   value={instruction.text}
                   onChange={(e) => handleInstructionChange(index, e.target.value)}
-                  style={{ flex: 1 }}
+                  className={`${textareaClass} flex-1`}
                   required
                 />
-                <RemoveButton
+                <button
                   type="button"
                   onClick={() => removeInstruction(index)}
                   disabled={formData.instructions.length === 1}
+                  className="bg-copper text-white border-none rounded px-2 py-1 text-xs cursor-pointer disabled:opacity-50"
                 >
                   Remove
-                </RemoveButton>
-              </DynamicField>
+                </button>
+              </div>
             ))}
-          </DynamicFieldsContainer>
-          <AddButton type="button" onClick={addInstruction}>
+          </div>
+          <button
+            type="button"
+            onClick={addInstruction}
+            className="bg-tan text-gray-700 border-none rounded px-3 py-2 text-sm mt-2 cursor-pointer self-start"
+          >
             Add Instruction
-          </AddButton>
-        </FormGroup>
+          </button>
+        </div>
 
-        <FormGroup>
-          <Label>Tags</Label>
-          <DynamicFieldsContainer>
+        <div className="flex flex-col gap-2">
+          <label className="font-display font-semibold text-sm text-gray-700">Tags</label>
+          <div className="flex flex-col gap-3">
             {formData.tags.map((tag, index) => (
-              <DynamicField key={index}>
-                <Input
+              <div key={index} className="flex gap-2 items-center">
+                <input
                   type="text"
                   placeholder="Tag"
                   value={tag}
                   onChange={(e) => handleTagChange(index, e.target.value)}
-                  style={{ flex: 1 }}
+                  className={`${inputClass} flex-1`}
                 />
-                <RemoveButton
+                <button
                   type="button"
                   onClick={() => removeTag(index)}
                   disabled={formData.tags.length === 1}
+                  className="bg-copper text-white border-none rounded px-2 py-1 text-xs cursor-pointer disabled:opacity-50"
                 >
                   Remove
-                </RemoveButton>
-              </DynamicField>
+                </button>
+              </div>
             ))}
-          </DynamicFieldsContainer>
-          <AddButton type="button" onClick={addTag}>
+          </div>
+          <button
+            type="button"
+            onClick={addTag}
+            className="bg-tan text-gray-700 border-none rounded px-3 py-2 text-sm mt-2 cursor-pointer self-start"
+          >
             Add Tag
-          </AddButton>
-        </FormGroup>
+          </button>
+        </div>
 
-        <FormGroup>
-          <Label>Equipment</Label>
-          <DynamicFieldsContainer>
+        <div className="flex flex-col gap-2">
+          <label className="font-display font-semibold text-sm text-gray-700">Equipment</label>
+          <div className="flex flex-col gap-3">
             {formData.equipment.map((item, index) => (
-              <DynamicField key={index}>
-                <Input
+              <div key={index} className="flex gap-2 items-center">
+                <input
                   type="text"
                   placeholder="Equipment item"
                   value={item}
                   onChange={(e) => handleEquipmentChange(index, e.target.value)}
-                  style={{ flex: 1 }}
+                  className={`${inputClass} flex-1`}
                 />
-                <RemoveButton
+                <button
                   type="button"
                   onClick={() => removeEquipment(index)}
                   disabled={formData.equipment.length === 1}
+                  className="bg-copper text-white border-none rounded px-2 py-1 text-xs cursor-pointer disabled:opacity-50"
                 >
                   Remove
-                </RemoveButton>
-              </DynamicField>
+                </button>
+              </div>
             ))}
-          </DynamicFieldsContainer>
-          <AddButton type="button" onClick={addEquipment}>
+          </div>
+          <button
+            type="button"
+            onClick={addEquipment}
+            className="bg-tan text-gray-700 border-none rounded px-3 py-2 text-sm mt-2 cursor-pointer self-start"
+          >
             Add Equipment
-          </AddButton>
-        </FormGroup>
+          </button>
+        </div>
 
-        <Button type="submit">Submit Recipe</Button>
-      </Form>
-    </FormContainer>
+        <button
+          type="submit"
+          disabled={isSubmitDisabled}
+          className="bg-burgundy text-white border-none rounded px-6 py-3 font-display font-semibold text-base cursor-pointer transition-colors hover:bg-burgundy-hover disabled:bg-gray-300 disabled:cursor-not-allowed"
+        >
+          {isSubmitting ? 'Saving...' : mode === 'edit' ? 'Update Recipe' : 'Submit Recipe'}
+        </button>
+      </form>
+    </div>
   )
 }
 

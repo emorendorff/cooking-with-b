@@ -1,63 +1,9 @@
 import { useEffect, useState } from "react";
-import styled from "styled-components";
 import { RecipeWithRelations } from "../types";
 import { getRecipes } from "../lib/api";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import RecipeCard from "../components/RecipeCard";
-
-const CarouselContainer = styled.div`
-  margin-top: 12px;
-
-  .react-multi-carousel-arrow {
-    background: rgba(106, 13, 43, 0.8);
-    min-width: 36px;
-    min-height: 36px;
-
-    &:hover {
-      background: rgba(106, 13, 43, 1);
-    }
-  }
-
-  .react-multi-carousel-arrow--left {
-    left: 4px;
-  }
-
-  .react-multi-carousel-arrow--right {
-    right: 4px;
-  }
-
-  /* Hide arrows on mobile, rely on swipe */
-  @media (max-width: 600px) {
-    .react-multi-carousel-arrow {
-      display: none;
-    }
-  }
-
-  .react-multi-carousel-dot-list {
-    bottom: -8px;
-    display: none;
-
-    @media (max-width: 600px) {
-      display: flex;
-    }
-  }
-
-  .react-multi-carousel-dot button {
-    background: #c6b7a8;
-    border: none;
-  }
-
-  .react-multi-carousel-dot--active button {
-    background: #6a0d2b;
-  }
-`;
-
-const CarouselItem = styled.div`
-  padding: 0 6px;
-  display: flex;
-  justify-content: center;
-`;
 
 const responsive = {
   desktop: {
@@ -102,7 +48,7 @@ const RecipeBrowser = () => {
   if (recipes.length === 0) return <div>No recipes yet!</div>;
 
   return (
-    <CarouselContainer>
+    <div className="mt-3 carousel-container">
       <Carousel
         additionalTransfrom={0}
         arrows
@@ -118,12 +64,12 @@ const RecipeBrowser = () => {
         swipeable
       >
         {recipes.map((recipe) => (
-          <CarouselItem key={recipe.id}>
+          <div key={recipe.id} className="px-1.5 flex justify-center">
             <RecipeCard recipe={recipe} />
-          </CarouselItem>
+          </div>
         ))}
       </Carousel>
-    </CarouselContainer>
+    </div>
   );
 };
 
