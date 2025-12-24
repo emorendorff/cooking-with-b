@@ -1,201 +1,232 @@
-import { useState, useEffect } from 'react'
-import { RecipeFormData, IngredientFormData, Instruction, Recipe } from './types'
-import { getRecipes } from './lib/api'
+import { useState, useEffect } from "react";
+import {
+  RecipeFormData,
+  IngredientFormData,
+  Instruction,
+  Recipe
+} from "./types";
+import { getAllRecipes } from "./lib/api";
 
 interface RecipeFormProps {
-  onSubmit: (recipe: RecipeFormData, ingredients: IngredientFormData[]) => Promise<string | void>
-  initialData?: RecipeFormData
-  initialIngredients?: IngredientFormData[]
-  mode?: 'add' | 'edit'
+  onSubmit: (
+    recipe: RecipeFormData,
+    ingredients: IngredientFormData[]
+  ) => Promise<string | void>;
+  initialData?: RecipeFormData;
+  initialIngredients?: IngredientFormData[];
+  mode?: "add" | "edit";
 }
 
 const emptyIngredient: IngredientFormData = {
-  item: '',
-  amount: '',
-  unit: '',
+  item: "",
+  amount: "",
+  unit: "",
   linked_recipe_id: null,
-  isLinkedRecipe: false,
-}
+  isLinkedRecipe: false
+};
 
-const emptyInstruction: Instruction = { step: 1, text: '' }
+const emptyInstruction: Instruction = { step: 1, text: "" };
 
 const initialFormData: RecipeFormData = {
-  name: '',
-  tagline: '',
-  servings: '',
-  prep_time: '',
-  cook_time: '',
-  total_time: '',
-  difficulty: 'easy',
+  name: "",
+  tagline: "",
+  servings: "",
+  prep_time: "",
+  cook_time: "",
+  total_time: "",
+  difficulty: "easy",
   instructions: [emptyInstruction],
-  equipment: [''],
-  tags: [''],
-}
+  equipment: [""],
+  tags: [""]
+};
 
-const RecipeForm = ({ onSubmit, initialData, initialIngredients, mode = 'add' }: RecipeFormProps) => {
-  const [formData, setFormData] = useState<RecipeFormData>(initialData || initialFormData)
+const RecipeForm = ({
+  onSubmit,
+  initialData,
+  initialIngredients,
+  mode = "add"
+}: RecipeFormProps) => {
+  const [formData, setFormData] = useState<RecipeFormData>(
+    initialData || initialFormData
+  );
   const [ingredients, setIngredients] = useState<IngredientFormData[]>(
     initialIngredients || [emptyIngredient]
-  )
-  const [availableRecipes, setAvailableRecipes] = useState<Recipe[]>([])
-  const [isDirty, setIsDirty] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  );
+  const [availableRecipes, setAvailableRecipes] = useState<Recipe[]>([]);
+  const [isDirty, setIsDirty] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    getRecipes().then(setAvailableRecipes).catch(console.error)
-  }, [])
+    getAllRecipes().then(setAvailableRecipes).catch(console.error);
+  }, []);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-    setIsDirty(true)
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setIsDirty(true);
+  };
 
-  const handleIngredientChange = (index: number, field: keyof IngredientFormData, value: string | boolean) => {
-    setIngredients(prev => prev.map((ing, i) =>
-      i === index ? { ...ing, [field]: value } : ing
-    ))
-    setIsDirty(true)
-  }
+  const handleIngredientChange = (
+    index: number,
+    field: keyof IngredientFormData,
+    value: string | boolean
+  ) => {
+    setIngredients((prev) =>
+      prev.map((ing, i) => (i === index ? { ...ing, [field]: value } : ing))
+    );
+    setIsDirty(true);
+  };
 
   const toggleIngredientType = (index: number) => {
-    setIngredients(prev => prev.map((ing, i) =>
-      i === index ? {
-        ...ing,
-        isLinkedRecipe: !ing.isLinkedRecipe,
-        item: '',
-        unit: '',
-        linked_recipe_id: null,
-      } : ing
-    ))
-    setIsDirty(true)
-  }
+    setIngredients((prev) =>
+      prev.map((ing, i) =>
+        i === index
+          ? {
+              ...ing,
+              isLinkedRecipe: !ing.isLinkedRecipe,
+              item: "",
+              unit: "",
+              linked_recipe_id: null
+            }
+          : ing
+      )
+    );
+    setIsDirty(true);
+  };
 
   const addIngredient = () => {
-    setIngredients(prev => [...prev, emptyIngredient])
-    setIsDirty(true)
-  }
+    setIngredients((prev) => [...prev, emptyIngredient]);
+    setIsDirty(true);
+  };
 
   const removeIngredient = (index: number) => {
     if (ingredients.length > 1) {
-      setIngredients(prev => prev.filter((_, i) => i !== index))
-      setIsDirty(true)
+      setIngredients((prev) => prev.filter((_, i) => i !== index));
+      setIsDirty(true);
     }
-  }
+  };
 
   const handleInstructionChange = (index: number, text: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       instructions: prev.instructions.map((inst, i) =>
         i === index ? { ...inst, text } : inst
-      ),
-    }))
-    setIsDirty(true)
-  }
+      )
+    }));
+    setIsDirty(true);
+  };
 
   const addInstruction = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       instructions: [
         ...prev.instructions,
-        { step: prev.instructions.length + 1, text: '' },
-      ],
-    }))
-    setIsDirty(true)
-  }
+        { step: prev.instructions.length + 1, text: "" }
+      ]
+    }));
+    setIsDirty(true);
+  };
 
   const removeInstruction = (index: number) => {
     if (formData.instructions.length > 1) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         instructions: prev.instructions
           .filter((_, i) => i !== index)
-          .map((inst, i) => ({ ...inst, step: i + 1 })),
-      }))
-      setIsDirty(true)
+          .map((inst, i) => ({ ...inst, step: i + 1 }))
+      }));
+      setIsDirty(true);
     }
-  }
+  };
 
   const handleTagChange = (index: number, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      tags: prev.tags.map((tag, i) => (i === index ? value : tag)),
-    }))
-    setIsDirty(true)
-  }
+      tags: prev.tags.map((tag, i) => (i === index ? value : tag))
+    }));
+    setIsDirty(true);
+  };
 
   const addTag = () => {
-    setFormData(prev => ({ ...prev, tags: [...prev.tags, ''] }))
-    setIsDirty(true)
-  }
+    setFormData((prev) => ({ ...prev, tags: [...prev.tags, ""] }));
+    setIsDirty(true);
+  };
 
   const removeTag = (index: number) => {
     if (formData.tags.length > 1) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        tags: prev.tags.filter((_, i) => i !== index),
-      }))
-      setIsDirty(true)
+        tags: prev.tags.filter((_, i) => i !== index)
+      }));
+      setIsDirty(true);
     }
-  }
+  };
 
   const handleEquipmentChange = (index: number, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      equipment: prev.equipment.map((item, i) => (i === index ? value : item)),
-    }))
-    setIsDirty(true)
-  }
+      equipment: prev.equipment.map((item, i) => (i === index ? value : item))
+    }));
+    setIsDirty(true);
+  };
 
   const addEquipment = () => {
-    setFormData(prev => ({ ...prev, equipment: [...prev.equipment, ''] }))
-    setIsDirty(true)
-  }
+    setFormData((prev) => ({ ...prev, equipment: [...prev.equipment, ""] }));
+    setIsDirty(true);
+  };
 
   const removeEquipment = (index: number) => {
     if (formData.equipment.length > 1) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        equipment: prev.equipment.filter((_, i) => i !== index),
-      }))
-      setIsDirty(true)
+        equipment: prev.equipment.filter((_, i) => i !== index)
+      }));
+      setIsDirty(true);
     }
-  }
+  };
 
   const resetForm = () => {
-    setFormData(initialFormData)
-    setIngredients([emptyIngredient])
-    setIsDirty(false)
-  }
+    setFormData(initialFormData);
+    setIngredients([emptyIngredient]);
+    setIsDirty(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
     try {
-      await onSubmit(formData, ingredients)
-      if (mode === 'add') {
-        resetForm()
+      await onSubmit(formData, ingredients);
+      if (mode === "add") {
+        resetForm();
       } else {
-        setIsDirty(false)
+        setIsDirty(false);
       }
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
-  const isSubmitDisabled = isSubmitting || (mode === 'edit' && !isDirty)
+  const isSubmitDisabled = isSubmitting || (mode === "edit" && !isDirty);
 
-  const inputClass = "px-3 py-2 border border-tan rounded font-secondary text-sm"
-  const selectClass = "px-3 py-2 border border-tan rounded font-secondary text-sm"
-  const textareaClass = "px-3 py-2 border border-tan rounded-lg font-secondary text-sm min-h-[50px]"
+  const inputClass =
+    "px-3 py-2 border border-tan rounded font-secondary text-sm";
+  const selectClass =
+    "px-3 py-2 border border-tan rounded font-secondary text-sm";
+  const textareaClass =
+    "px-3 py-2 border border-tan rounded-lg font-secondary text-sm min-h-[50px]";
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-cream rounded-lg shadow-lg">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <label htmlFor="name" className="font-display font-semibold text-sm text-gray-700">
+          <label
+            htmlFor="name"
+            className="font-display font-semibold text-sm text-gray-700"
+          >
             Recipe Name
           </label>
           <input
@@ -210,7 +241,10 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients, mode = 'add' }:
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="tagline" className="font-display font-semibold text-sm text-gray-700">
+          <label
+            htmlFor="tagline"
+            className="font-display font-semibold text-sm text-gray-700"
+          >
             Tagline
           </label>
           <input
@@ -224,7 +258,10 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients, mode = 'add' }:
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="servings" className="font-display font-semibold text-sm text-gray-700">
+          <label
+            htmlFor="servings"
+            className="font-display font-semibold text-sm text-gray-700"
+          >
             Servings
           </label>
           <input
@@ -239,7 +276,10 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients, mode = 'add' }:
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="prep_time" className="font-display font-semibold text-sm text-gray-700">
+          <label
+            htmlFor="prep_time"
+            className="font-display font-semibold text-sm text-gray-700"
+          >
             Prep Time
           </label>
           <input
@@ -254,7 +294,10 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients, mode = 'add' }:
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="cook_time" className="font-display font-semibold text-sm text-gray-700">
+          <label
+            htmlFor="cook_time"
+            className="font-display font-semibold text-sm text-gray-700"
+          >
             Cook Time
           </label>
           <input
@@ -269,7 +312,10 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients, mode = 'add' }:
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="difficulty" className="font-display font-semibold text-sm text-gray-700">
+          <label
+            htmlFor="difficulty"
+            className="font-display font-semibold text-sm text-gray-700"
+          >
             Difficulty
           </label>
           <select
@@ -286,7 +332,9 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients, mode = 'add' }:
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="font-display font-semibold text-sm text-gray-700">Ingredients</label>
+          <label className="font-display font-semibold text-sm text-gray-700">
+            Ingredients
+          </label>
           <div className="flex flex-col gap-3">
             {ingredients.map((ingredient, index) => (
               <div key={index} className="flex gap-2 items-center flex-wrap">
@@ -294,10 +342,12 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients, mode = 'add' }:
                   type="button"
                   onClick={() => toggleIngredientType(index)}
                   className={`border-none rounded px-2 py-1 text-xs cursor-pointer ${
-                    ingredient.isLinkedRecipe ? 'bg-burgundy text-white' : 'bg-tan text-gray-700'
+                    ingredient.isLinkedRecipe
+                      ? "bg-burgundy text-white"
+                      : "bg-tan text-gray-700"
                   }`}
                 >
-                  {ingredient.isLinkedRecipe ? 'Recipe Link' : 'Ingredient'}
+                  {ingredient.isLinkedRecipe ? "Recipe Link" : "Ingredient"}
                 </button>
 
                 {ingredient.isLinkedRecipe ? (
@@ -306,12 +356,20 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients, mode = 'add' }:
                       type="text"
                       placeholder="Amount (e.g., 1 batch)"
                       value={ingredient.amount}
-                      onChange={(e) => handleIngredientChange(index, 'amount', e.target.value)}
+                      onChange={(e) =>
+                        handleIngredientChange(index, "amount", e.target.value)
+                      }
                       className={`${inputClass} w-30`}
                     />
                     <select
-                      value={ingredient.linked_recipe_id || ''}
-                      onChange={(e) => handleIngredientChange(index, 'linked_recipe_id', e.target.value)}
+                      value={ingredient.linked_recipe_id || ""}
+                      onChange={(e) =>
+                        handleIngredientChange(
+                          index,
+                          "linked_recipe_id",
+                          e.target.value
+                        )
+                      }
                       className={`${selectClass} flex-1`}
                     >
                       <option value="">Select a recipe...</option>
@@ -328,7 +386,9 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients, mode = 'add' }:
                       type="text"
                       placeholder="Item"
                       value={ingredient.item}
-                      onChange={(e) => handleIngredientChange(index, 'item', e.target.value)}
+                      onChange={(e) =>
+                        handleIngredientChange(index, "item", e.target.value)
+                      }
                       className={`${inputClass} flex-2`}
                       required={!ingredient.isLinkedRecipe}
                     />
@@ -336,14 +396,18 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients, mode = 'add' }:
                       type="text"
                       placeholder="Amount"
                       value={ingredient.amount}
-                      onChange={(e) => handleIngredientChange(index, 'amount', e.target.value)}
+                      onChange={(e) =>
+                        handleIngredientChange(index, "amount", e.target.value)
+                      }
                       className={`${inputClass} w-20`}
                     />
                     <input
                       type="text"
                       placeholder="Unit"
                       value={ingredient.unit}
-                      onChange={(e) => handleIngredientChange(index, 'unit', e.target.value)}
+                      onChange={(e) =>
+                        handleIngredientChange(index, "unit", e.target.value)
+                      }
                       className={`${inputClass} w-20`}
                     />
                   </>
@@ -370,15 +434,21 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients, mode = 'add' }:
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="font-display font-semibold text-sm text-gray-700">Instructions</label>
+          <label className="font-display font-semibold text-sm text-gray-700">
+            Instructions
+          </label>
           <div className="flex flex-col gap-3">
             {formData.instructions.map((instruction, index) => (
               <div key={index} className="flex gap-2 items-center flex-wrap">
-                <span className="min-w-7.5 text-center">{instruction.step}.</span>
+                <span className="min-w-7.5 text-center">
+                  {instruction.step}.
+                </span>
                 <textarea
                   placeholder="Instruction step"
                   value={instruction.text}
-                  onChange={(e) => handleInstructionChange(index, e.target.value)}
+                  onChange={(e) =>
+                    handleInstructionChange(index, e.target.value)
+                  }
                   className={`${textareaClass} flex-1`}
                   required
                 />
@@ -403,7 +473,9 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients, mode = 'add' }:
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="font-display font-semibold text-sm text-gray-700">Tags</label>
+          <label className="font-display font-semibold text-sm text-gray-700">
+            Tags
+          </label>
           <div className="flex flex-col gap-3">
             {formData.tags.map((tag, index) => (
               <div key={index} className="flex gap-2 items-center">
@@ -435,7 +507,9 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients, mode = 'add' }:
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="font-display font-semibold text-sm text-gray-700">Equipment</label>
+          <label className="font-display font-semibold text-sm text-gray-700">
+            Equipment
+          </label>
           <div className="flex flex-col gap-3">
             {formData.equipment.map((item, index) => (
               <div key={index} className="flex gap-2 items-center">
@@ -471,11 +545,15 @@ const RecipeForm = ({ onSubmit, initialData, initialIngredients, mode = 'add' }:
           disabled={isSubmitDisabled}
           className="bg-burgundy text-white border-none rounded px-6 py-3 font-display font-semibold text-base cursor-pointer transition-colors hover:bg-burgundy-hover disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? 'Saving...' : mode === 'edit' ? 'Update Recipe' : 'Submit Recipe'}
+          {isSubmitting
+            ? "Saving..."
+            : mode === "edit"
+            ? "Update Recipe"
+            : "Submit Recipe"}
         </button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default RecipeForm
+export default RecipeForm;
